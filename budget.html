@@ -424,6 +424,16 @@ function dateAchat(libelle) {
   return m ? `20${m[3]}-${m[2]}-${m[1]}` : null;
 }
 
+// Mots-clés courants des libellés bancaires français → catégorie proposée (toujours à valider par vous ; vos propres règles passent avant)
+const MOTS = [
+  [/VIREMENT INTERNE|MAELYS LAI/, { type: 'virement_interne' }],
+  [/REMB(OURSEMENT)?\b/, { type: 'remboursement', categorie: 'Remboursements reçus' }],
+  [/SALAIRE|PAIE\s/, { type: 'revenu', categorie: 'Salaire' }],
+  [/\bMSA\b|\bCAF\b|CPAM|FRANCE TRAVAIL|POLE EMPLOI|PREST\.?\s?FAM/, { type: 'revenu', categorie: 'Prestations et aides' }],
+  [/\bEDF\b|ENGIE|TOTALENERGIES|FREE\b|ORANGE|SFR|BOUYGUES|SOSH|MACIF|MATMUT|AXA|MAIF|MMA|GROUPAMA|ASSURANC|MUTUELLE|DIRECTION GENERALE DES FIN|IMPOT|DGFIP|KEREIS|CRECHE|EAU\b|VEOLIA|SUEZ|LOYER|NETFLIX|SPOTIFY|DISNEY|CANAL\+?|APPLE\.COM\/BILL|OPENAI|CHATGPT|AMAZON PRIME|PLAYSTATION|DEEZER|YOUTUBE|ICLOUD|GOOGLE ONE/, { type: 'depense', categorie: 'Charges fixes', recurrent: 'a_confirmer' }],
+  [/SODICHAMP|SODEXO|INTERMARCHE|LECLERC|CARREFOUR|AUCHAN|LIDL|ALDI|MONOPRIX|CASINO|SUPER U|SYSTEME U|PICARD|GRAND FRAIS|BOULANG|BOUCHER|DRIVE|MCDONALD|KFC|BURGER|PIZZ|RESTAU|CAFE|BRASSERIE|UBER\s?EATS|DELIVEROO/, { type: 'depense', categorie: 'Alimentation' }],
+  [/PHARMACIE|\bDR\s|MEDECIN|DENTIST|OPTIC|KINE|LABORATOIRE|AMAZON|VINTED|LEETCHI|PAYPAL|OUIRACE|IKEA|DECATHLON|FNAC|CULTURA|ZARA|KIABI|ACTION\b|BEBE|BOUTIK|STATION|CARBURANT|ESSO|SHELL|TOTAL\b|PARC AUTO|AUTOROUTE|PEAGE|SNCF|UBER|RELAY|TABAC|PRESSE|PHOTOBOX|SPORT|CLUB/, { type: 'depense', categorie: 'Autres dépenses variables' }],
+];
 function suggerer(t) {
   const L = t.libelle.toUpperCase();
   if (t.section === 'PAIEMENTS DIFFERES' && t.cents > 0) return { type: 'remboursement', confiance: 'moyenne' };
@@ -432,19 +442,31 @@ function suggerer(t) {
   if (/VIR(EMENT)?\s.*(VERS|EPARGNE)/.test(L) || /VIREMENT VERS/.test(L)) return { type: 'virement_interne', confiance: 'faible' };
   if (/^ECH PRET|^PRLV/.test(L)) return { type: 'depense', categorie: 'Charges fixes', recurrent: 'a_confirmer', confiance: 'moyenne' };
   if (/INTERESSEMENT|PARTICIPATION/.test(L)) return { type: 'revenu', categorie: 'Autres revenus', recurrent: 'non', confiance: 'moyenne' };
+  for (const [re, s] of MOTS) if (re.test(L) && (s.type !== 'depense' || t.cents < 0) && (s.type !== 'revenu' || t.cents > 0)) return { ...s, confiance: 'moyenne' };
+  if (t.cents > 0 && /^CB\s/.test(L)) return { type: 'remboursement', confiance: 'faible' }; // retour d'un achat par carte
   if (t.cents > 0) return { type: 'revenu', confiance: 'faible' };
+  if (/^CB\s/.test(L)) return { type: 'depense', categorie: 'Autres dépenses variables', confiance: 'faible' };
   return { type: 'depense', confiance: 'faible' };
 }
 
 function lireReleve(texte, { compte = 'principal' } = {}) {
   const lignes = texte.split(/\r?\n/);
-  const soldes = lignes.map((l) => l.match(SOLDE)).filter(Boolean);
+  // « SOLDE CREDITEUR/DEBITEUR AU jj/mm/aaaa ± montant » : tolérant sur les accents, le signe manquant et un montant tombé sur la ligne suivante (lecture de PDF)
+  const soldes = [];
+  lignes.forEach((l, i) => {
+    const e = l.match(/SOLDE\s+(CR[ÉE]DITEUR|D[ÉE]BITEUR)\s+AU\s+(\d{2}\/\d{2}\/\d{4})(.*)$/i); if (!e) return;
+    const suite = [e[3], lignes[i + 1] || '', lignes[i + 2] || ''];
+    for (const s of suite) {
+      const a = s.match(/([+-])?\s*(\d[\d\s\u00a0\u202f]*,\d{2})/); if (!a) continue;
+      soldes.push([l, e[2], a[1] || (/^D/i.test(e[1]) ? '-' : '+'), a[2]]); return;
+    }
+  });
   const ouverture = soldes.length ? aCentimes(soldes[0][2], soldes[0][3]) : null;
   const cloture = soldes.length > 1 ? aCentimes(soldes.at(-1)[2], soldes.at(-1)[3]) : null;
 
   const transactions = [], controles = [], attendus = { frais: null, cartes: [] };
   let section = null, carte = null, dernier = null;
-  const SECTIONS = ['OPERATION DE DEPOT', 'VIREMENTS RECUS', 'FRAIS BANCAIRES', 'PAIEMENTS DIFFERES', 'PRELEVEMENTS'];
+  const SECTIONS = ['OPERATION DE DEPOT', 'VIREMENTS RECUS', 'FRAIS BANCAIRES', 'PAIEMENTS DIFFERES', 'RETRAITS', 'PRELEVEMENTS'];
 
   for (const l of lignes) {
     const s = l.trim();
@@ -454,7 +476,7 @@ function lireReleve(texte, { compte = 'principal' } = {}) {
       const f = s.match(/TOTAL DE\s+-\s*([\d\s,]+)\s*€/);
       if (f) attendus.frais = aCentimes('-', f[1]);
       const c = s.match(/carte bancaire N°\s*(\d{4})/i);
-      if (c) { carte = { fin: c[1], attendu: null, somme: 0 }; attendus.cartes.push(carte); }
+      if (c && h !== 'RETRAITS') { carte = { fin: c[1], attendu: null, somme: 0 }; attendus.cartes.push(carte); } // les retraits sont débités tout de suite : pas de total « prélevé » à contrôler
       continue;
     }
     const pre = s.match(/montant pr[ée]lev[ée].*?:\s*([\d\s\u00a0\u202f]+,\d{2})\s*€/i);
@@ -718,6 +740,7 @@ function recap(A){const r=A.r,nr=A.nouv.filter(t=>reglesEff().some(g=>g.cle===cl
  <p>${r.transactions.length} opération(s) lues · <b>${A.nouv.length} nouvelle(s)</b> · ${A.dup} déjà connue(s), ignorée(s) · ${nr} classée(s) grâce à vos règles · ${A.nouv.length-nr} à vérifier</p>
  <p class="k">Nouvelles opérations : entrées brutes ${enEuros(e)}, sorties brutes ${enEuros(s)} (avant tri entre revenus, virements internes et remboursements).</p>
  ${r.controles.map(c=>`<div class="alerte ${c.ok?'v':''}">${esc(c.message)}</div>`).join('')}${A.alertes.map(m=>`<div class="alerte o">${esc(m)}</div>`).join('')}
+ ${A.texte?`<details><summary>Texte lu dans le PDF (pour diagnostic)</summary><p class="k">Si un contrôle est en erreur, copiez ce texte et envoyez-le à Claude (masquez au besoin vos informations personnelles).</p><textarea readonly rows="8" style="width:100%" onclick="this.select()">${esc(A.texte)}</textarea></details>`:''}
  <p><button class="a" onclick="validerImport()">Valider l'import</button> <button class="a g" onclick="ANA=null;rendu()">Annuler</button></p></div>`}
 const reglesEff=()=>[...S.regles,...((ANA&&ANA.regles)||[]).filter(g=>!S.regles.some(r=>r.cle===g.cle))];
 function analyser(){const txt=document.getElementById('rt').value,compte=document.getElementById('rcpt').value.trim()||'Compte principal';analyserR(lireReleve(txt,{compte}),compte,[])}
@@ -737,7 +760,11 @@ function validerImport(){const A=ANA;if(!A.r.ok&&!confirm('Certains contrôles o
  const ts=Date.now();
  S.txs.push(...A.nouv.map((t,i)=>{const rg=S.regles.find(g=>g.cle===cleM(t)),sg=t.suggestion;return{id:'i'+ts+'_'+i,date:t.date,dateValeur:t.dateValeur,amountCents:t.amountCents,label:t.label,account:A.compte,
   type:rg?rg.type:sg.type,category:rg?rg.category:(sg.categorie||''),statut:rg?'propose':'a_valider',dateAchat:t.dateAchat,carte:t.carte,source:'import'}}));
- if(!S.releves.some(x=>x.compte===A.compte&&x.debut===A.debut&&x.fin===A.r.dateCloture))S.releves.push({id:'r'+ts,compte:A.compte,debut:A.debut,fin:A.r.dateCloture,ouverture:A.r.ouverture,cloture:A.r.cloture});
+ {let fin=A.r.dateCloture,clo=A.r.cloture,ouv=A.r.ouverture;const somme=A.r.transactions.reduce((a,t)=>a+t.amountCents,0);
+  if(!fin||!Number.isFinite(clo)){const ds=A.r.transactions.map(t=>t.date).sort();fin=fin||ds[ds.length-1]||aujourdhui();clo=null;
+   const v=prompt('Le solde de fin de relevé n\'a pas été trouvé dans le fichier.\nSaisissez le solde du compte au '+fd0(fin)+' (ex. 1234,56), ou laissez vide pour importer les opérations sans solde :');
+   const n=v?Math.round(parseFloat(String(v).replace(/[\s\u00a0]/g,'').replace(',','.'))*100):NaN;if(Number.isFinite(n))clo=n}
+  if(clo!==null&&Number.isFinite(clo)&&!S.releves.some(x=>x.compte===A.compte&&x.debut===A.debut&&x.fin===fin))S.releves.push({id:'r'+ts,compte:A.compte,debut:A.debut,fin,ouverture:Number.isFinite(ouv)?ouv:clo-somme,cloture:clo})}
  ANA=null;rapprocherAuto();base();sauver();onglet=S.txs.some(aVerifier)?'verif':'bord';rendu()}
 /* ---------- dépenses prévisibles ---------- */
 function dep(){
@@ -1351,8 +1378,10 @@ async function pdfTexte(buf){
   it.sort((a,b)=>b.y-a.y||a.x-b.x);
   const lignes=[];for(const i of it){const l=lignes[lignes.length-1];if(l&&Math.abs(l.y-i.y)<=3)l.it.push(i);else lignes.push({y:i.y,it:[i]})}
   const x0=Math.min(...it.map(i=>i.x));
-  pages.push(lignes.map(l=>{l.it.sort((a,b)=>a.x-b.x);let t='';
-   for(const i of l.it){const pos=Math.round((i.x-x0)/4.5);if(pos>t.length)t+=' '.repeat(pos-t.length);else if(t&&!/\s$/.test(t))t+=' ';t+=i.s}
+  pages.push(lignes.map(l=>{l.it.sort((a,b)=>a.x-b.x);let t='',fin=null;
+   for(const i of l.it){ // morceaux collés (écart < 1 pt) = même mot ; sinon espaces proportionnels à l'écart
+    if(fin===null)t=' '.repeat(Math.max(0,Math.round((i.x-x0)/4.5)))+i.s;else{const g=i.x-fin;t+=(g<1?'':' '.repeat(Math.max(1,Math.round(g/4.5))))+i.s}
+    fin=i.x+i.w}
    return t}).join('\n'))}
  return pages.join('\n\n')}
 async function importerPdf(f){if(!f)return;
@@ -1363,7 +1392,7 @@ async function importerPdf(f){if(!f)return;
   const rc=document.getElementById('rcpt'),compte=(rc&&rc.value.trim())||'Compte principal',r=lireReleve(txt,{compte});
   if(!r.transactions.length){onglet='imp';rendu();const t=document.getElementById('rt');if(t){t.value=txt;const d=t.closest('details');if(d)d.open=true}
    alert('Le PDF a été lu, mais aucune opération n\'a été reconnue : le format de ce relevé n\'est pas encore pris en charge. Le texte lu est affiché dans « Coller le texte du relevé » : envoyez-le à Claude pour que le format soit ajouté.');return}
-  onglet='imp';analyserR(r,compte,[])
+  onglet='imp';analyserR(r,compte,[]);if(ANA)ANA.texte=txt;rendu()
  }catch(e){alert('Lecture du PDF impossible : '+(e&&e.message?e.message:e))}}
 async function impfCharger(f){if(!f)return;IMPERR='';IMPBILAN=null;
  try{if(f.size>25e6)throw new Error('fichier trop volumineux (25 Mo maximum)');
