@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="fr" data-espace="quotidien">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Mon Quotidien — tâches et courses · Notre Maison</title>
+<style>
+/* ===== Thème : mêmes couleurs que « Mon budget » ===== */
+:root{--bg:#f6f7fb;--surface:#fff;--surface2:#f1f3f9;--bord:#e4e7ef;--txt:#0f172a;--muted:#475569;--acc:#4f46e5;--acc2:#8b5cf6;--acc-soft:#eef0ff;--ok:#047857;--ok-soft:#e6f7ef;--warn:#b45309;--warn-soft:#fff3df;--ko:#be123c;--ko-soft:#ffecf0;--sh:0 1px 2px rgba(15,23,42,.05),0 6px 20px rgba(15,23,42,.05);--bgbase:linear-gradient(160deg,#f5f3ff 0%,#eef6ff 50%,#fdf2f8 100%);--ia:.55}
+@media(prefers-color-scheme:dark){:root{--bg:#0a0c12;--surface:#12151d;--surface2:#1a1e29;--bord:#252a38;--txt:#e9ecf4;--muted:#8d95aa;--acc:#818cf8;--acc2:#a78bfa;--acc-soft:#1b1f3d;--ok:#34d399;--ok-soft:#0e2a21;--warn:#fbbf24;--warn-soft:#2b2210;--ko:#fb7185;--ko-soft:#2e1219;--sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);--bgbase:linear-gradient(160deg,#0c0a18 0%,#070d1b 50%,#150a1d 100%);--ia:.4}}
+*{box-sizing:border-box}html{color-scheme:light dark}
+body{margin:0;font:14.5px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* fond animé (version légère de celui du budget) */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--bgbase)}
+.bg i{position:absolute;border-radius:50%;opacity:var(--ia);filter:blur(10px);will-change:transform}
+.o1{width:60vmax;height:60vmax;left:-15vmax;top:-20vmax;background:radial-gradient(closest-side,rgba(255,122,198,.7),transparent);animation:fl1 38s ease-in-out infinite}
+.o2{width:55vmax;height:55vmax;right:-15vmax;top:10vh;background:radial-gradient(closest-side,rgba(110,170,255,.7),transparent);animation:fl2 46s ease-in-out infinite}
+.o3{width:50vmax;height:50vmax;left:20vw;bottom:-25vmax;background:radial-gradient(closest-side,rgba(120,240,200,.6),transparent);animation:fl1 54s ease-in-out infinite reverse}
+@keyframes fl1{50%{transform:translate(8vmax,6vmax) scale(1.1)}}@keyframes fl2{50%{transform:translate(-7vmax,8vmax) scale(.92)}}
+@media(prefers-reduced-motion:reduce){.bg i{animation:none}}
+
+/* mise en page */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{position:sticky;top:0;height:100vh;padding:18px 12px;border-right:1px solid var(--bord);background:color-mix(in srgb,var(--surface) 72%,transparent);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:750;font-size:16px;padding:4px 8px 18px}
+.logo i{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-style:normal;color:#fff;background:linear-gradient(135deg,#4f46e5,#a21caf);box-shadow:0 6px 16px rgba(99,102,241,.35)}
+.it{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:0;border-radius:10px;background:none;cursor:pointer;font-weight:550;text-align:left;color:var(--txt)}
+.it:hover{background:var(--surface2)}.it.on{background:linear-gradient(90deg,var(--acc-soft),transparent);box-shadow:inset 3px 0 0 var(--acc);color:var(--acc)}
+.it svg,.tb svg{width:20px;height:20px;flex:none}
+.pill{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:700;min-width:20px;padding:1px 7px;border-radius:99px;background:var(--acc);color:#fff;text-align:center}
+main{padding:28px 32px 90px;max-width:1080px;width:100%;margin:0 auto}
+.ph{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}.ph h1{margin:0;font-size:26px;letter-spacing:-.02em}.ph p{margin:2px 0 0;color:var(--muted)}.ph .sp{flex:1}
+.tabbar{display:none}
+
+/* composants */
+.carte{background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid var(--bord);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.carte h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+svg{width:20px;height:20px;flex:none}
+.carte.h1{background:linear-gradient(135deg,#4338ca,#6d28d9 60%,#a21caf);color:#fff;border:0;box-shadow:0 14px 40px rgba(99,102,241,.35)}
+.carte.h1 .k{color:#ffffffd0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px}.grid>.carte{margin:0}
+.k{font-size:12.5px;color:var(--muted)}.v{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 14px;min-height:42px;border-radius:10px;border:1px solid var(--bord);background:var(--surface);font-weight:600;cursor:pointer}
+.btn:hover{background:var(--surface2)}.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn.pri:hover{filter:brightness(1.08)}
+.btn.ko{color:var(--ko)}.btn.sm{min-height:34px;padding:5px 11px;font-size:13px}.btn:disabled{opacity:.5;cursor:default}
+.btn svg{width:18px;height:18px}
+input[type=text],input[type=search],input[type=number],input[type=date],select,textarea{width:100%;min-height:42px;padding:8px 11px;border:1px solid var(--bord);border-radius:10px;background:var(--surface)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+label{display:block;font-size:13px;color:var(--muted);font-weight:550}label>input,label>select,label>textarea{margin-top:4px;color:var(--txt);font-weight:400}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg .full{grid-column:1/-1}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}.badge.warn{background:var(--warn-soft);color:var(--warn)}.badge.ko{background:var(--ko-soft);color:var(--ko)}.badge.acc{background:var(--acc-soft);color:var(--acc)}
+.vide{text-align:center;color:var(--muted);padding:26px 10px}.vide b{display:block;font-size:30px;margin-bottom:4px}
+
+/* barre d'ajout rapide */
+.ajout{display:flex;gap:8px;flex-wrap:wrap}.ajout input[type=text]{flex:1 1 220px}.ajout select,.ajout input[type=date]{flex:0 1 150px}
+.filtres{display:flex;gap:8px;overflow-x:auto;margin:12px 0 4px;scrollbar-width:none}
+.chip{flex:none;padding:6px 13px;min-height:36px;border:1px solid var(--bord);border-radius:99px;background:var(--surface);cursor:pointer;font-weight:550;font-size:13.5px}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* lignes de tâches / articles */
+.grp{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin:16px 4px 6px;display:flex;gap:8px;align-items:center}
+.grp.ko{color:var(--ko)}
+.ligne{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--bord);margin-bottom:6px;transition:opacity .25s,transform .25s}
+.ligne:hover{border-color:color-mix(in srgb,var(--acc) 40%,var(--bord))}
+.ligne .tx{flex:1;min-width:0;cursor:pointer}.ligne .t{font-weight:600;overflow-wrap:anywhere}.ligne .m{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.ligne.fait .t{text-decoration:line-through;color:var(--muted)}
+.ck{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--bord-c,#94a3b8);background:none;cursor:pointer;display:grid;place-items:center;padding:0}
+.ck svg{width:15px;height:15px;opacity:0;color:#fff}.ck:hover svg{opacity:.35;color:var(--acc)}
+.ck.on{background:var(--ok);border-color:var(--ok)}.ck.on svg{opacity:1;color:#fff}
+.ck.carre{border-radius:8px}
+.ib{flex:none;width:36px;height:36px;border-radius:10px;border:0;background:none;cursor:pointer;color:var(--muted);display:grid;place-items:center}.ib:hover{background:var(--surface2);color:var(--txt)}.ib svg{width:18px;height:18px}
+.prix{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rayon{display:flex;align-items:center;gap:8px}.rayon .e{font-size:17px}
+.sugg{display:flex;flex-wrap:wrap;gap:6px}.sugg button{padding:5px 11px;border-radius:99px;border:1px dashed var(--bord);background:none;cursor:pointer;font-size:13px}.sugg button:hover{border-style:solid;border-color:var(--acc);color:var(--acc)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.col-d{position:sticky;top:16px}
+.pb summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;font-size:15px}
+.pb summary::-webkit-details-marker{display:none}
+.pb summary::after{content:'▾';color:var(--muted);transition:transform .2s}.pb:not([open]) summary::after{transform:rotate(-90deg)}
+.pb summary>span:first-child{flex:1}
+.pb-g{margin-top:12px}.pb-t{font-size:13px;font-weight:700;margin-bottom:6px}
+.sugg button.pris{border-style:solid;border-color:transparent;background:var(--ok-soft);color:var(--ok);cursor:default}
+.pb-ed{display:flex;gap:4px;align-items:center;margin-bottom:4px}.pb-ed .nb{flex:none;white-space:nowrap;font-size:12px}.ib:disabled{opacity:.3;cursor:default}.pb-ed input{min-height:36px;padding:6px 10px}
+.seg{display:flex;gap:4px;padding:4px;background:var(--surface2);border-radius:12px;margin:14px 0 4px}
+.seg button{flex:1;border:0;background:none;padding:8px 6px;border-radius:9px;font-weight:600;cursor:pointer;color:var(--muted);display:flex;gap:6px;justify-content:center;align-items:center;min-height:40px}
+.seg button.on{background:var(--surface);color:var(--txt);box-shadow:var(--sh)}
+.seg .n{font-size:11.5px;font-weight:700;padding:0 7px;border-radius:99px;background:var(--bord);color:var(--txt)}.seg .n.ko{background:var(--ko);color:#fff}
+.recherche{display:flex;gap:8px;margin-top:12px}.recherche input{flex:1}
+.fpanel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}.fpanel select{min-height:38px;padding:6px 9px;font-size:13.5px}
+.btn-filtres{display:none}
+.actifs{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:8px 2px 0}.lien{border:0;background:none;color:var(--acc);font-weight:650;cursor:pointer;padding:4px;font-size:13px}
+.ligne.retard{box-shadow:inset 3px 0 0 var(--ko)}
+.drap{color:var(--ko);font-weight:800;margin-right:2px}
+.meta{font-size:12.5px;color:var(--muted)}
+.ck.fixe{cursor:default}
+.qte{flex:none;min-width:38px;min-height:34px;padding:4px 10px;border-radius:99px;border:1px solid transparent;background:var(--acc-soft);color:var(--acc);font-weight:750;font-size:13.5px;cursor:pointer;white-space:nowrap}
+.qte.vide{background:none;border:1px dashed var(--bord);color:var(--muted);font-weight:600;font-size:12.5px}
+.ligne.fait .qte{background:var(--surface2);color:var(--muted)}
+.ligne.art.fait{background:color-mix(in srgb,var(--surface) 60%,transparent)}
+@keyframes flash{0%,60%{background:var(--acc-soft);border-color:var(--acc)}}.ligne.flash{animation:flash 1.4s ease-out}
+.progres{display:flex;align-items:center;gap:12px;margin:4px 2px 2px;font-size:13.5px}.progres .barre{flex:1;height:6px;border-radius:99px;background:var(--surface2);overflow:hidden}.progres .barre i{display:block;height:100%;background:var(--ok);border-radius:99px;transition:width .3s}
+details.dpanier{margin-top:14px}details.dpanier>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;padding:6px 4px}
+details.dpanier>summary::-webkit-details-marker{display:none}details.dpanier>summary::after{content:'▾';margin-left:auto}details.dpanier:not([open])>summary::after{transform:rotate(-90deg)}
+.pas{display:flex;align-items:center;gap:8px}.pas button{width:48px;height:48px;border-radius:12px;border:1px solid var(--bord);background:var(--surface2);font-size:22px;font-weight:700;cursor:pointer}.pas input{text-align:center;font-size:18px;font-weight:700}
+.recap{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:13.5px;margin-bottom:12px}
+.mois{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tdb{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;margin-bottom:14px}.tdb>.carte{margin:0;min-width:0;overflow:hidden}
+.bloc{display:block;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}.bloc:hover{border-color:color-mix(in srgb,var(--acc) 40%,var(--bord))}
+.bloc .tt{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}.bloc .tt .chev{margin-left:auto;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.stat .v{font-size:26px;margin:0}.stat .k{display:block}.stat.ko .v,.stat.ko .k{color:var(--ko)}
+.imp{margin-top:10px;padding-top:10px;border-top:1px solid var(--bord);font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.raccourcis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.racc{min-width:0;text-align:center;line-height:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:8px 4px;border-radius:14px;border:1px solid var(--bord);background:color-mix(in srgb,var(--surface) 90%,transparent);font-weight:650;font-size:13px;cursor:pointer;color:var(--txt)}
+.racc:hover{border-color:var(--acc);color:var(--acc)}.racc.pri{background:var(--acc);border-color:var(--acc);color:#fff}.racc svg{width:22px;height:22px}
+.av{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:10.5px;font-weight:800;flex:none;letter-spacing:0}
+.av.p0{background:var(--acc);color:#fff}.av.p1{background:var(--surface);color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc)}
+.av-duo{display:inline-flex;flex:none}.av-duo .av+.av{margin-left:-7px}
+.ligne.cmp{padding:8px 10px;gap:10px}.ligne.cmp .t{font-weight:600}
+.jl{flex:none;width:62px;font-size:12px;font-weight:700;color:var(--muted);text-transform:capitalize}.jl.imp-j{color:var(--ko)}
+.carte h2 .sp{flex:1}.carte h2{flex-wrap:wrap}main{min-width:0}.carte h2 .lien{font-size:13px}
+.panier{position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#4338ca,#6d28d9);color:#fff;box-shadow:0 10px 30px rgba(79,70,229,.4);margin-top:14px}
+.panier .sp{flex:1}.panier .btn{background:#fff;color:#4338ca;border:0}
+table{width:100%;border-collapse:collapse}td,th{padding:9px 8px;border-bottom:1px solid var(--bord);text-align:left;vertical-align:middle}th{font-size:12px;color:var(--muted);font-weight:650}td.n,th.n{text-align:right}
+.etapes{margin:0;padding-left:20px}.etapes li{margin:4px 0}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:8px;font-size:13.5px}
+
+/* boîtes de dialogue */
+dialog{border:0;border-radius:18px;padding:0;width:min(560px,94vw);background:var(--surface);color:var(--txt);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(15,23,42,.45);backdrop-filter:blur(3px)}
+.dlg{padding:20px}.dlg h3{margin:0 0 14px;font-size:18px}.dlg .act{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}.dlg .act .sp{flex:1}
+fieldset{border:1px solid var(--bord);border-radius:12px;padding:12px;margin:14px 0 0}legend{font-weight:650;font-size:13.5px;padding:0 6px}
+.toggle{display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--txt);font-size:14px}.toggle input{width:20px;height:20px;accent-color:var(--acc)}
+
+/* notification */
+#toast{min-width:min(340px,90vw);position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#0f172a;color:#fff;padding:10px 12px 10px 16px;border-radius:12px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.3);transition:transform .25s;z-index:50;max-width:92vw}
+#toast.on{transform:translateX(-50%) translateY(0)}#toast button{background:none;border:0;color:#a5b4fc;font-weight:700;cursor:pointer;padding:6px}
+
+/* mobile */
+.btn-filtres.on{border-color:var(--acc);color:var(--acc)}
+@media(max-width:900px){.panier{padding:10px 12px;gap:8px}.panier b{font-size:13.5px}.panier .btn{white-space:nowrap;padding:8px 12px;flex:none}.ib{width:40px;height:40px}.btn.sm{min-height:38px}.ck{width:30px;height:30px}dialog{max-height:90vh;overflow:auto}.dlg{padding:18px 16px}.dlg h3{font-size:17px}.dlg .act .btn{flex:1 1 auto}.pb-ed .ib{width:36px}.imp.mois-c,.lien.pc{display:none!important}.tdb .stat .v{font-size:22px}.tdb{grid-template-columns:minmax(0,1fr);gap:10px}.tdb .carte{padding:14px}.stats{margin-top:6px}.stats .v{font-size:24px}.racc{min-height:58px;font-size:12px}.ligne.art .ck{width:30px;height:30px}.ligne.art{padding:12px}.btn-filtres{display:inline-flex}.fpanel{grid-template-columns:1fr 1fr}.fpanel:not(.ouvert){display:none}.seg button{font-size:13px}}
+@media(max-width:1100px){.cols{grid-template-columns:1fr}.col-d{position:static}}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}aside{display:none}
+ main{padding:18px 14px calc(96px + env(safe-area-inset-bottom))}
+ .ph h1{font-size:22px}
+ .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border-top:1px solid var(--bord)}
+ .tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:6px 2px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;position:relative;border-radius:10px}
+ .tb.on{color:var(--acc)}.tb .pill{position:absolute;top:0;right:calc(50% - 22px);font-size:10px;padding:0 5px;min-width:16px}
+ .fg{grid-template-columns:1fr}
+ #toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+ .panier{bottom:calc(76px + env(safe-area-inset-bottom))}
+ .ajout select,.ajout input[type=date]{flex:1 1 40%}
+}
+</style>
+<link rel="icon" href="icone.png"><link rel="apple-touch-icon" href="icone.png">
+<script src="maison.js" defer></script>
+</head>
+<body>
+<div class="bg"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
+<div class="app">
+ <aside><div class="logo"><i>✓</i>Mon Quotidien</div><nav id="nav" aria-label="Menu principal"></nav></aside>
+ <main id="vue" tabindex="-1"></main>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Navigation"></nav>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"><span id="toast-t"></span><button id="toast-b" hidden>Annuler</button></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   PLAN DU MODULE « QUOTIDIEN » (repères pour la fusion avec Mon budget)
+   1. Outils (dates, montants, échappement)      6. Courses + pense-bête
+   2. Rayons et rangement automatique            7. Vers « Mon budget » (fichier JSON)
+   3. Données : verifierDonnees(), chargement    8. Réglages, sauvegarde, restauration
+   4. Navigation, compteurs, notifications       9. Démarrage
+   5. Accueil, Tâches
+   Données (clé localStorage « quotidien.v1 ») :
+   S = { v, personnes[2], categories[], rayons[{k,e,n}], taches[], journal[],
+         courses[], catalogue{}, achats[], magasins[], penseBete[], pbOuvert, sauv }
+   Noms globaux identiques dans Mon budget (à préfixer lors de la fusion) :
+   S, CLE, ONGLETS, STATUTS, aller, esc, fd, iso, nav, norm, onglet, rendu,
+   sauver, toast, vide — et les id HTML #nav, #tabbar, #vue.
+   ===================================================================== */
+/* =====================================================================
+   NOTRE QUOTIDIEN — tâches et liste de courses
+   Toutes les données restent dans ce navigateur (localStorage).
+   Lien avec « Mon budget » : un fichier JSON au format de sauvegarde
+   du budget (« budget-sauvegarde-v1 ») à importer avec « Fusionner ».
+   ===================================================================== */
+const CLE = 'quotidien.v1';
+
+/* ---------- outils ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const iso = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const auj = () => iso(new Date());
+const versDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const plusJours = (s, n) => { const d = versDate(s); d.setDate(d.getDate() + n); return iso(d); };
+const plusMois = (s, n) => { const d = versDate(s), j = d.getDate(); d.setDate(1); d.setMonth(d.getMonth() + n); const fin = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); d.setDate(Math.min(j, fin)); return iso(d); };
+const ecart = s => Math.round((versDate(s) - versDate(auj())) / 864e5);
+const JOURS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+const MOIS = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const fd = s => { if (!s) return ''; const d = versDate(s); return d.getDate() + ' ' + MOIS[d.getMonth()] + (d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : ''); };
+const quand = s => { const e = ecart(s); if (e === 0) return "aujourd'hui"; if (e === 1) return 'demain'; if (e === -1) return 'hier'; if (e > 1 && e < 7) return JOURS[versDate(s).getDay()]; if (e < 0) return 'il y a ' + (-e) + ' j'; return fd(s); };
+const euros = c => (c / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+const versCents = v => { let t = String(v ?? '').replace(/[\s\u00a0€]/g, ''); if (t.includes(',')) t = t.replace(/\./g, '').replace(',', '.'); if (!/^-?\d+(\.\d+)?$/.test(t)) return null; const n = Number(t); return Number.isFinite(n) ? Math.round(n * 100) : null; };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+const $ = id => document.getElementById(id);
+
+/* ---------- icônes ---------- */
+const IC = {
+ home:'<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',
+ tache:'<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 12l3 3 5-6"/>',
+ course:'<path d="M3 4h2l2.4 11.2a2 2 0 002 1.6h7.7a2 2 0 002-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="18" cy="20.5" r="1.3"/>',
+ budget:'<path d="M4 7h16v12H4z"/><path d="M16 13h2M4 7l3-3h10l3 3"/>',
+ reglage:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-2.7-1.1l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15H3a2 2 0 110-4h.1a1.6 1.6 0 001.1-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 009 3.6V3a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 001.1 2.7H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1.3z"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ suppr:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+ crayon:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+ dl:'<path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"/>',
+ ul:'<path d="M12 16V5m0 0L8 9m4-4l4 4M5 19h14"/>',
+ recur:'<path d="M4 12a8 8 0 0114-5.3L20 9M20 4v5h-5M20 12a8 8 0 01-14 5.3L4 15M4 20v-5h5"/>'
+};
+const ico = (n, cl = '') => `<svg class="${cl}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+/* ---------- rayons et rangement automatique des articles ---------- */
+const RAYONS = [
+ ['fruits', '🥦', 'Fruits et légumes', 'pomme poire banane orange citron clementine mandarine kiwi fraise framboise raisin melon pasteque ananas mangue avocat tomate salade laitue concombre courgette aubergine poivron carotte pomme de terre patate oignon ail echalote poireau brocoli chou epinard champignon haricot vert radis betterave persil coriandre basilic menthe fruit legume courge potiron navet celeri fenouil endive'],
+ ['frais', '🧀', 'Crèmerie et frais', 'lait beurre creme yaourt yogourt fromage emmental comte camembert mozzarella feta parmesan oeuf oeufs skyr fromage blanc petit suisse jambon lardon lardons knacki saucisse pate feuilletee pate brisee pate a pizza houmous dessert compote'],
+ ['viande', '🥩', 'Viande et poisson', 'poulet dinde boeuf steak hache veau porc cote agneau escalope filet saumon thon cabillaud colin crevette poisson viande merguez roti cuisse magret'],
+ ['pain', '🥖', 'Boulangerie', 'pain baguette brioche croissant pain de mie biscotte viennoiserie tortilla wrap'],
+ ['epicerie', '🥫', 'Épicerie', 'pates riz semoule quinoa lentille farine sucre sel poivre huile vinaigre moutarde mayonnaise ketchup sauce conserve tomate pelee concentre cafe the chocolat cacao cereales confiture miel nutella biscuit gateau chips olive epice bouillon levure amande noix noisette sirop compote puree soupe thon en boite mais'],
+ ['surgeles', '❄️', 'Surgelés', 'surgele surgeles glace pizza surgelee frites legumes surgeles poisson pane nuggets'],
+ ['boissons', '🧃', 'Boissons', 'eau eau gazeuse jus soda coca biere vin champagne limonade lait vegetal boisson'],
+ ['bebe', '👶', 'Bébé', 'couche couches lingette lingettes petit pot petits pots lait de croissance lait infantile liniment biberon tetine serum physiologique'],
+ ['hygiene', '🧴', 'Hygiène et beauté', 'shampoing gel douche savon dentifrice brosse a dents deodorant coton mouchoir papier toilette rasoir creme solaire maquillage serviette hygienique tampon protection'],
+ ['maison', '🧽', 'Entretien et maison', 'lessive adoucissant liquide vaisselle eponge sac poubelle essuie tout papier alu film alimentaire javel nettoyant pastille lave vaisselle ampoule pile allumette bougie'],
+ ['autre', '🛒', 'Autre', '']
+];
+const rayonsDefaut = () => RAYONS.map(([k, e, n]) => ({ k, e, n }));
+/* RAY[clé] -> { e: emoji, n: nom } lu en direct dans les réglages (S.rayons) */
+const RAY = new Proxy({}, {
+ get: (_, k) => { const l = (typeof S !== 'undefined' && S && S.rayons) || rayonsDefaut(); const r = l.find(x => x.k === k); return r ? { e: r.e, n: r.n } : undefined; },
+ has: (_, k) => ((typeof S !== 'undefined' && S && S.rayons) || rayonsDefaut()).some(x => x.k === k)
+});
+const DICO = [];
+RAYONS.forEach(([k, , , mots]) => { if (!mots) return; const l = mots.split(' '); for (let i = 0; i < l.length; i++) { DICO.push([l[i], k]); if (l[i + 1]) DICO.push([l[i] + ' ' + l[i + 1], k]); } });
+DICO.sort((a, b) => b[0].length - a[0].length); // les expressions les plus longues d'abord
+function devinerRayon(nom) { const r = devinerRayonBrut(nom); return r in RAY ? r : 'autre'; } // un rayon supprimé des réglages renvoie vers « Autre »
+function devinerRayonBrut(nom) {
+ const n = norm(nom), c = S.catalogue[n];
+ if (c) return c.rayon; // déjà acheté : on garde le rayon appris
+ const mots = n.replace(/[^a-z0-9 ]/g, ' ');
+ if (/\bbebe\b/.test(mots)) return 'bebe';
+ const ph = ' ' + mots + ' ';
+ for (const [m, k] of DICO) if (m.length > 2 && (ph.includes(' ' + m + ' ') || ph.includes(' ' + m + 's ') || ph.includes(' ' + m + 'x '))) return k;
+ return 'autre';
+}
+
+/* ---------- données ---------- */
+const CATS_T = ['Maison', 'Administratif', 'Santé', 'Enfants', 'Voiture', 'Jardin', 'Achats', 'Autre'];
+const RECUR = { aucune: 'Une seule fois', jour: 'Chaque jour', semaine: 'Chaque semaine', deuxsem: 'Toutes les 2 semaines', mois: 'Chaque mois' };
+const STATUTS = { a_planifier: 'À planifier (hors prévision)', planifiee: 'Planifiée (dans la prévision)' };
+/* Pense-bête par défaut : un couple, un bébé (~1 an) et une maison. Entièrement modifiable. */
+const PB_DEFAUT = [
+ ['👶 Bébé', ['Couches', 'Lingettes', 'Lait de croissance', 'Petits pots / repas bébé', 'Compotes bébé', 'Biscuits bébé', 'Liniment / crème pour le change', 'Sérum physiologique', 'Mouchoirs']],
+ ['🍽️ Repas de la semaine', ['Fruits', 'Légumes', 'Viande / poisson', 'Pâtes, riz, féculents', 'Œufs', 'Fromage, yaourts', 'Pain', 'Petit-déjeuner (café, thé, céréales)', 'Goûters']],
+ ['🧴 Salle de bain', ['Papier toilette', 'Gel douche', 'Shampoing', 'Dentifrice', 'Coton', 'Déodorant']],
+ ['🏠 Maison', ['Lessive', 'Liquide vaisselle', 'Pastilles lave-vaisselle', 'Éponges', 'Sacs poubelle', 'Essuie-tout', 'Produit ménager', 'Piles / ampoules']]
+];
+const pbDefaut = () => PB_DEFAUT.map(([titre, items]) => ({ id: uid(), titre, items: items.slice() }));
+const vide = () => ({ v: 1, personnes: ['Robin', 'Maelys'], taches: [], courses: [], catalogue: {}, achats: [], magasins: [], sauv: '', penseBete: pbDefaut(), pbOuvert: true, journal: [], categories: CATS_T.slice(), rayons: rayonsDefaut() });
+const ISO = { test: x => typeof x === 'string' && /^\d{4}-\d\d-\d\d$/.test(x) && iso(versDate(x)) === x }; // date AAAA-MM-JJ réellement existante
+/* État d'envoi vers Mon budget : à envoyer -> import à confirmer -> importé */
+const etatEnvoi = x => x.confirmeLe ? 'importe' : x.fichierLe ? 'a_confirmer' : 'a_envoyer';
+const ENVOI = { a_envoyer: ['À envoyer', 'acc'], a_confirmer: ['Import à confirmer', 'warn'], importe: ['Importé', 'ok'] };
+/* Courses : transmission automatique vers Mon budget par la boîte d'échange (maison.js). Plus de fichier ni de confirmation. */
+const ENVOI_A = { demo: ['Exemple, non envoyé', ''], importe: ['Dans Mon budget', 'ok'], rapproche: ['Rapprochée avec la banque', 'ok'], attente: ['En attente de Mon budget', 'warn'] };
+const donneesAchat = a => ({ date: a.date, montantCents: a.montantCents, magasin: a.magasin || '', articles: a.articles.slice(0, 60), categorie: 'Alimentation',
+ payeur: { idx: String(a.payePar), nom: a.payePar === 'joint' ? 'Compte commun' : (S.personnes[a.payePar] || '') } });
+const MM = () => (window.Maison && window.Maison.echange) ? window.Maison : null;
+function emettreAchats() { // dépose (ou met à jour) chaque session de courses avec montant ; sans effet si rien n'a changé
+ const M = MM(); if (!M || BLOQUE || !S) return;
+ try {
+  for (const a of S.achats) if (a.montantCents > 0 && ISO.test(a.date)) M.echange.deposer('depense', a.id, donneesAchat(a));
+  for (const t of S.taches) if (projetEnvoyable(t)) M.echange.deposer('projet', t.id, donneesProjet(t));
+  // éléments déjà transmis puis supprimés ici (ou projet retiré d'une tâche) : on prévient Mon budget, qui ne supprime jamais rien
+  const vivants = new Set([...S.achats.filter(a => a.montantCents > 0).map(a => M.echange.ref('achat', a.id)), ...S.taches.filter(projetEnvoyable).map(t => M.echange.ref('tache', t.id))]);
+  for (const [ref, e] of Object.entries(M.echange.entrees())) if (e && e.donnees && !e.donnees.supprime && !vivants.has(ref)) M.echange.deposer(e.type, ref.split(':')[2], { supprime: true });
+ } catch (e) {}
+}
+const donneesProjet = t => ({ nom: t.titre, montantCents: t.projet.montantCents, date: t.projet.date, paiements: t.projet.paiements || 1,
+ statut: t.fait ? 'realisee' : t.projet.statut, indispensable: !!t.prio });
+const projetEnvoyable = t => t.projet && t.projet.montantCents > 0 && ISO.test(t.projet.date) && !t.projet.demo;
+function etatProjet(t) {
+ if (t.projet && t.projet.demo) return 'demo';
+ const M = MM(); if (!M) return 'attente';
+ let k; try { k = M.echange.accuses()[M.echange.ref('tache', t.id)]; } catch (e) {}
+ if (!k) return 'attente';
+ if (k.rev !== 'legacy' && k.rev !== M.hash(donneesProjet(t))) return 'attente';
+ return 'importe';
+}
+function etatAchat(a) {
+ const M = MM(); if (!M) return 'attente';
+ let k; try { k = M.echange.accuses()[M.echange.ref('achat', a.id)]; } catch (e) {}
+ if (!k) return 'attente';
+ if (k.rev !== 'legacy' && k.rev !== M.hash(donneesAchat(a))) return 'attente';
+ return k.etat === 'rapproche' ? 'rapproche' : 'importe';
+}
+function migrerEnvoi(x) { // ancien champ « envoyeLe » (v1-v2) = fichier créé, import jamais confirmé
+ if ('envoyeLe' in x) { if (x.envoyeLe && !x.fichierLe) x.fichierLe = x.envoyeLe; delete x.envoyeLe; }
+ x.fichierLe = ISO.test(x.fichierLe || '') ? x.fichierLe : ''; x.confirmeLe = ISO.test(x.confirmeLe || '') ? x.confirmeLe : '';
+}
+/* Vérifie et normalise des données (stockage du navigateur ou fichier de sauvegarde).
+   Renvoie { E: erreurs bloquantes, W: avertissements, d: données prêtes } — ne modifie jamais S. */
+function verifierDonnees(src) {
+ const E = [], W = [], obj = x => x && typeof x === 'object' && !Array.isArray(x), str = x => typeof x === 'string';
+ if (!obj(src)) return { E: ["Le contenu n'a pas la structure d'une sauvegarde de Notre quotidien."], W };
+ if (src.format === 'budget-sauvegarde-v1') return { E: ["Ce fichier est destiné à « Mon budget » (fichier « vers-budget »), pas à cet outil."], W };
+ if (src.format !== undefined && src.format !== 'quotidien-sauvegarde-v1') return { E: ['Format de fichier inconnu : ce n\'est pas une sauvegarde de Notre quotidien.'], W };
+ if (Number(src.v) > 1) E.push("Cette sauvegarde vient d'une version plus récente de l'outil : elle ne peut pas être lue ici.");
+ if (!Array.isArray(src.taches)) E.push('La liste des tâches est absente ou illisible.');
+ if (!Array.isArray(src.courses)) E.push('La liste de courses est absente ou illisible.');
+ for (const [k, l] of [['achats', 'dépenses de courses'], ['journal', 'historique des tâches'], ['categories', 'catégories de tâches'], ['rayons', 'rayons'], ['magasins', 'magasins'], ['penseBete', 'pense-bête'], ['personnes', 'prénoms']]) if (src[k] !== undefined && !Array.isArray(src[k])) E.push(`La section « ${l} » est illisible.`);
+ if (src.catalogue !== undefined && !obj(src.catalogue)) E.push('La section « articles mémorisés » est illisible.');
+ if (E.length) return { E, W };
+ const d = JSON.parse(JSON.stringify(src)); delete d.format;
+ let nId = 0;
+ const ids = () => { const vus = new Set(); return x => { if (!str(x.id) || !x.id || vus.has(x.id)) { x.id = uid(); nId++; } vus.add(x.id); }; };
+ // tâches
+ const idT = ids(); let badT = 0, badP = 0, datesT = 0;
+ d.taches = d.taches.filter(t => { if (!obj(t) || !str(t.titre) || !t.titre.trim()) { badT++; return false; } return true; });
+ for (const t of d.taches) {
+  idT(t); t.notes = str(t.notes) ? t.notes : '';
+  t.qui = t.qui === 'tous' ? 'tous' : (String(t.qui) === '0' || String(t.qui) === '1') ? Number(t.qui) : 'tous';
+  if (t.echeance && !ISO.test(t.echeance)) { t.echeance = ''; datesT++; } t.echeance = t.echeance || '';
+  t.recur = t.recur in RECUR ? t.recur : 'aucune'; t.cat = str(t.cat) ? t.cat : ''; t.prio = !!t.prio; t.fait = !!t.fait;
+  t.faitLe = ISO.test(t.faitLe || '') ? t.faitLe : (t.fait ? auj() : ''); t.creeLe = ISO.test(t.creeLe || '') ? t.creeLe : '';
+  if (!(Number.isInteger(t.jourRef) && t.jourRef >= 1 && t.jourRef <= 31)) delete t.jourRef;
+  if (t.derniereFois !== undefined && !ISO.test(t.derniereFois)) delete t.derniereFois;
+  if (t.projet == null) t.projet = null;
+  else if (!obj(t.projet) || !Number.isFinite(t.projet.montantCents) || t.projet.montantCents <= 0 || !ISO.test(t.projet.date || '') || !(t.projet.statut in STATUTS)) badP++;
+  else { t.projet.montantCents = Math.round(t.projet.montantCents); t.projet.paiements = Math.max(1, parseInt(t.projet.paiements) || 1); migrerEnvoi(t.projet); }
+ }
+ // rayons (réglages) : « Autre » est toujours présent
+ if (d.rayons === undefined) d.rayons = rayonsDefaut();
+ else { const vus = new Set(); d.rayons = d.rayons.filter(r => obj(r) && str(r.k) && r.k && str(r.n) && r.n.trim() && !vus.has(r.k) && vus.add(r.k)).map(r => ({ k: r.k, e: str(r.e) ? r.e.slice(0, 4) : '', n: r.n.trim() })); }
+ if (!d.rayons.some(r => r.k === 'autre')) d.rayons.push({ k: 'autre', e: '🛒', n: 'Autre' });
+ const RK = new Set(d.rayons.map(r => r.k));
+ // catégories de tâches (réglages)
+ if (d.categories === undefined) d.categories = CATS_T.slice();
+ else { const vus = new Set(); d.categories = d.categories.filter(c => str(c) && c.trim() && !vus.has(norm(c)) && vus.add(norm(c))).map(c => c.trim()); }
+ // articles
+ const idC = ids(); let badC = 0;
+ d.courses = d.courses.filter(c => { if (!obj(c) || !str(c.nom) || !c.nom.trim()) { badC++; return false; } return true; });
+ for (const c of d.courses) { idC(c); c.qte = str(c.qte) ? c.qte : ''; c.rayon = RK.has(c.rayon) ? c.rayon : 'autre'; c.prixCents = Number.isFinite(c.prixCents) && c.prixCents > 0 ? Math.round(c.prixCents) : null; c.coche = !!c.coche; }
+ // dépenses de courses
+ const idA = ids(); let badA = 0;
+ d.achats = (d.achats || []).filter(a => { if (!obj(a) || !ISO.test(a.date || '') || !Number.isFinite(a.montantCents) || a.montantCents < 0) { badA++; return false; } return true; });
+ for (const a of d.achats) { idA(a); a.magasin = str(a.magasin) ? a.magasin : ''; a.payePar = ['joint', '0', '1'].includes(String(a.payePar)) ? String(a.payePar) : 'joint'; a.detail = Array.isArray(a.detail) ? a.detail.filter(x => obj(x) && str(x.nom) && x.nom).map(x => ({ nom: x.nom, qte: str(x.qte) ? x.qte : '', rayon: str(x.rayon) ? x.rayon : 'autre' })) : []; /* l'historique garde la clé même si le rayon a été supprimé */ a.articles = Array.isArray(a.articles) ? a.articles.filter(str) : []; a.montantCents = Math.round(a.montantCents); migrerEnvoi(a); }
+ // historique des réalisations (tâches récurrentes) : une entrée abîmée est ignorée, jamais bloquante
+ let badJ = 0;
+ d.journal = (d.journal || []).filter(j => { if (!obj(j) || !str(j.titre) || !ISO.test(j.faitLe || '')) { badJ++; return false; } return true; })
+  .map(j => ({ id: str(j.id) && j.id ? j.id : uid(), tacheId: str(j.tacheId) ? j.tacheId : '', titre: j.titre, qui: j.qui === 'tous' ? 'tous' : (String(j.qui) === '0' || String(j.qui) === '1') ? Number(j.qui) : 'tous', cat: str(j.cat) ? j.cat : '', prio: !!j.prio, echeance: ISO.test(j.echeance || '') ? j.echeance : j.faitLe, faitLe: j.faitLe }));
+ if (badJ) W.push(`${badJ} entrée(s) illisible(s) de l'historique des tâches ont été ignorées.`);
+ // le reste
+ const cat = {}; for (const [k, v] of Object.entries(d.catalogue || {})) if (obj(v) && str(v.nom) && v.nom) cat[k] = { nom: v.nom, rayon: RK.has(v.rayon) ? v.rayon : 'autre', n: Number.isFinite(v.n) ? v.n : 0, last: str(v.last) ? v.last : '' };
+ d.catalogue = cat;
+ d.magasins = (d.magasins || []).filter(str).slice(0, 12);
+ if (d.penseBete === undefined) d.penseBete = pbDefaut();
+ else d.penseBete = d.penseBete.filter(g => obj(g) && str(g.titre) && Array.isArray(g.items)).map(g => ({ id: str(g.id) && g.id ? g.id : uid(), titre: g.titre, items: g.items.filter(x => str(x) && x.trim()) }));
+ d.personnes = Array.isArray(d.personnes) && d.personnes.length === 2 && d.personnes.every(x => str(x) && x.trim()) ? d.personnes : vide().personnes;
+ d.pbOuvert = d.pbOuvert !== false; d.sauv = ISO.test(d.sauv || '') ? d.sauv : ''; d.v = 1;
+ if (badT) E.push(`${badT} tâche(s) illisible(s) (titre absent ou invalide).`);
+ if (badP) E.push(`${badP} tâche(s) avec un projet budget illisible (montant, date ou statut invalide).`);
+ if (badC) E.push(`${badC} article(s) de courses illisible(s).`);
+ if (badA) E.push(`${badA} session(s) de courses illisible(s) (date ou montant invalide).`);
+ if (datesT) W.push(`${datesT} échéance(s) invalide(s) ont été retirées (les tâches sont conservées, sans date).`);
+ if (nId) W.push(`${nId} identifiant(s) manquant(s) ou en double ont été recréés.`);
+ return { E, W, d: E.length ? null : d };
+}
+
+/* Chargement au démarrage : des données illisibles ne sont JAMAIS écrasées en silence. */
+let S, BLOQUE = false, ALERTE = null, BRUT = null;
+(function charger() {
+ try { BRUT = localStorage.getItem(CLE); } catch (e) { ALERTE = { titre: 'Stockage inaccessible', texte: "Le navigateur refuse l'accès au stockage local (navigation privée ?). Les modifications ne pourront pas être conservées." }; }
+ if (!BRUT) { S = vide(); return; }
+ let x = null; try { x = JSON.parse(BRUT); } catch (e) {}
+ const R = x ? verifierDonnees(x) : { E: ['Données illisibles.'] };
+ if (!R.E.length) { S = R.d; return; }
+ S = vide(); let copie = false;
+ try { localStorage.setItem(CLE + '.secours', BRUT); copie = true; } catch (e) {}
+ if (!copie) BLOQUE = true; // impossible de garder une copie : on n'écrit plus rien tant que l'utilisateur ne l'a pas téléchargée
+ ALERTE = { titre: 'Données enregistrées illisibles', texte: `Les données enregistrées dans ce navigateur n'ont pas pu être lues (${R.E.join(' ')}). Elles n'ont pas été effacées${copie ? ' : une copie de secours a été conservée' : ''}. Téléchargez-les ci-dessous pour les garder, puis restaurez une sauvegarde si vous en avez une.`, brut: true };
+})();
+let PREMIERE = !BRUT;
+function sauver() {
+ if (BLOQUE) { toast("Enregistrement suspendu : téléchargez d'abord la copie des données illisibles (Réglages)."); return false; }
+ try { localStorage.setItem(CLE, JSON.stringify(S)); emettreAchats(); return true; } catch (e) { toast("Enregistrement impossible : l'espace de stockage est plein ou inaccessible."); return false; }
+}
+function copieSecours(etiquette) { try { localStorage.setItem(CLE + '.' + etiquette, JSON.stringify(S)); return true; } catch (e) { return false; } }
+
+const nomQui = q => q === 'tous' ? 'Tous les deux' : (S.personnes[q] || '—');
+
+/* ---------- navigation ---------- */
+const ONGLETS = [
+ ['accueil', 'Accueil', 'home'],
+ ['taches', 'Tâches', 'tache'],
+ ['courses', 'Courses', 'course'],
+ ['reglages', 'Réglages', 'reglage']
+];
+let onglet = (location.hash || '').slice(1);
+if (!ONGLETS.some(o => o[0] === onglet)) onglet = 'accueil';
+/* Filtres du module Tâches (non enregistrés : ils repartent à zéro à chaque ouverture) */
+const F0 = () => ({ vue: 'jour', q: '', qui: 'tous', cat: '', prio: '', statut: '', ouvert: false, nHist: 40 });
+let F = F0();
+
+/* Classement d'une tâche (règle unique utilisée partout) :
+   - fait : terminée (jamais comptée en retard)
+   - retard : non terminée, échéance STRICTEMENT avant aujourd'hui
+   - jour : échéance aujourd'hui ; semaine : dans les 7 jours ; plus : au-delà ; sans : sans date */
+function etatTache(t) {
+ if (t.fait) return 'fait';
+ if (!t.echeance) return 'sans';
+ const a = auj();
+ return t.echeance < a ? 'retard' : t.echeance === a ? 'jour' : t.echeance <= plusJours(a, 7) ? 'semaine' : 'plus';
+}
+function compterTaches(liste = S.taches) { const c = { retard: 0, jour: 0, semaine: 0, plus: 0, sans: 0, fait: 0 }; for (const t of liste) c[etatTache(t)]++; return c; }
+const nbBudget = () => 0; // plus rien à envoyer à la main : tout part automatiquement
+function pastille(k) {
+ if (k === 'taches') { const c = compterTaches(); return c.retard + c.jour; } // à faire aujourd'hui (en retard compris)
+ if (k === 'courses') return S.courses.filter(c => !c.coche).length;
+ return 0;
+}
+const TITRES_PASTILLE = { taches: "tâche(s) à faire aujourd'hui, retards compris", courses: 'article(s) à acheter', budget: 'élément(s) à envoyer ou import(s) à confirmer' };
+function nav() {
+ $('nav').innerHTML = ONGLETS.map(([k, n, i]) => { const p = pastille(k), tp = TITRES_PASTILLE[k] ? ` title="${p} ${TITRES_PASTILLE[k]}"` : ''; return `<button class="it ${k === onglet ? 'on' : ''}" onclick="aller('${k}')"${k === onglet ? ' aria-current="page"' : ''}>${ico(i)}${n}${p ? `<em class="pill"${tp}>${p}</em>` : ''}</button>`; }).join('');
+ $('tabbar').innerHTML = ONGLETS.map(([k, n, i]) => { const p = pastille(k); return `<button class="tb ${k === onglet ? 'on' : ''}" onclick="aller('${k}')"${k === onglet ? ' aria-current="page"' : ''}>${ico(i)}<span>${k === 'budget' ? 'Budget' : n}</span>${p ? `<em class="pill">${p}</em>` : ''}</button>`; }).join('');
+}
+function aller(k) { onglet = k; history.replaceState(null, '', '#' + k); rendu(); window.scrollTo(0, 0); }
+function rendu() {
+ nav();
+ const v = $('vue');
+ v.innerHTML = ({ accueil: vAccueil, taches: vTaches, courses: vCourses, reglages: vReglages })[onglet]();
+}
+
+/* ---------- notification avec « Annuler » ---------- */
+let tmToast, annulerFn;
+function toast(msg, annuler, libelle) {
+ $('toast-t').textContent = msg; annulerFn = annuler || null; $('toast-b').hidden = !annuler; $('toast-b').textContent = libelle || 'Annuler';
+ $('toast').classList.add('on'); clearTimeout(tmToast); tmToast = setTimeout(() => $('toast').classList.remove('on'), annuler ? 5000 : 2600);
+}
+$('toast-b').onclick = () => { if (annulerFn) annulerFn(); annulerFn = null; $('toast').classList.remove('on'); };
+function instantane() { const avant = JSON.stringify(S); return () => { S = JSON.parse(avant); sauver(); rendu(); }; }
+
+/* =====================================================================
+   ACCUEIL
+   ===================================================================== */
+/* Repère discret de la personne : initiale pleine (personne 1), cerclée (personne 2), les deux pour « tous » */
+function initiales() { const a = (S.personnes[0] || '?').trim(), b = (S.personnes[1] || '?').trim(); return a[0].toUpperCase() === b[0].toUpperCase() ? [a.slice(0, 2), b.slice(0, 2)] : [a[0].toUpperCase(), b[0].toUpperCase()]; }
+function avatar(q) {
+ const I = initiales(), un = i => `<span class="av p${i}" title="${esc(S.personnes[i])}">${esc(I[i])}</span>`;
+ return q === 'tous' ? `<span class="av-duo" title="Tous les deux" aria-label="Tous les deux">${un(0)}${un(1)}</span>` : un(q);
+}
+let accQui = 'tous'; // filtre « tâches de chacun » de l'accueil (non enregistré)
+/* Sélection des tâches de l'accueil, calculée à partir des données existantes */
+function tachesAccueil() {
+ const a = auj(), j7 = plusJours(a, 7);
+ const l = S.taches.filter(t => !t.fait && (accQui === 'tous' || t.qui === accQui || t.qui === 'tous'));
+ const urgente = t => t.prio && (!t.echeance || t.echeance <= j7);
+ const ordre = t => { const e = etatTache(t); return e === 'retard' ? 0 : e === 'jour' ? 1 : 2; };
+ const auj_ = l.filter(t => ['retard', 'jour'].includes(etatTache(t)) || urgente(t)).sort((x, y) => ordre(x) - ordre(y) || parDate(x, y));
+ const deja = new Set(auj_.map(t => t.id));
+ const avenir = l.filter(t => !deja.has(t.id) && etatTache(t) === 'semaine').sort(parDate);
+ return { auj: auj_, avenir };
+}
+function libJour(d) { const e = ecart(d); if (e === 1) return 'Demain'; const x = versDate(d); return JOURS[x.getDay()].slice(0, 3) + '. ' + x.getDate(); }
+function ligneAccueil(t) {
+ const e = etatTache(t), rec = estRecurrente(t);
+ const ech = e === 'retard' ? `<span style="color:var(--ko);font-weight:650">En retard · ${quand(t.echeance)}</span>` : e === 'jour' ? "Aujourd'hui" : t.echeance ? quand(t.echeance) : 'Sans date';
+ return `<div class="ligne cmp ${e === 'retard' ? 'retard' : ''}" id="t-${t.id}">
+  <button class="ck" onclick="basculerTache('${t.id}')" aria-label="Marquer comme fait : ${esc(t.titre)}">${ico('check')}</button>
+  <div class="tx" onclick="editerTache('${t.id}')"><div class="t">${t.prio ? '<span class="drap" title="Prioritaire">⚑</span>' : ''}${esc(t.titre)}</div><div class="meta">${ech}${rec ? ' ↻' : ''}${t.prio && e !== 'retard' && e !== 'jour' ? ' · <span style="color:var(--ko)">prioritaire</span>' : ''}</div></div>
+  ${avatar(t.qui)}</div>`;
+}
+function ligneAVenir(t) {
+ return `<div class="ligne cmp" id="t-${t.id}">
+  <span class="jl ${t.prio ? 'imp-j' : ''}">${libJour(t.echeance)}</span>
+  <div class="tx" onclick="editerTache('${t.id}')"><div class="t">${t.prio ? '<span class="drap" title="Prioritaire">⚑</span>' : ''}${esc(t.titre)}${estRecurrente(t) ? ' <span class="k">↻</span>' : ''}</div></div>
+  ${avatar(t.qui)}
+  <button class="ck" onclick="basculerTache('${t.id}')" aria-label="Marquer comme fait : ${esc(t.titre)}" style="width:24px;height:24px">${ico('check')}</button></div>`;
+}
+function vAccueil() {
+ const c = compterTaches(), { auj: aFaire, avenir } = tachesAccueil();
+ const nc = S.courses.filter(x => !x.coche).length, np = S.courses.filter(x => x.coche).length;
+ const ne = 0, nconf = 0;
+ const mois = auj().slice(0, 7), depMois = S.achats.filter(x => x.date.startsWith(mois)).reduce((s, x) => s + x.montantCents, 0);
+ const h = new Date().getHours(), salut = h < 5 ? 'Bonne nuit' : h < 18 ? 'Bonjour' : 'Bonsoir';
+ const d = new Date();
+ // prochaine échéance importante (tâche prioritaire datée, à partir d'aujourd'hui)
+ const imp = S.taches.filter(t => !t.fait && t.prio && t.echeance && t.echeance >= auj()).sort(parDate)[0];
+ let bienvenue = '';
+ if (PREMIERE && !S.taches.length && !S.courses.length) bienvenue = `<div class="carte"><h2>👋 Bienvenue</h2><p class="k" style="margin:0 0 10px">Ajoutez vos premières tâches et vos courses. Tout reste dans ce navigateur. Vous pouvez aussi charger un exemple pour découvrir l'outil (il sera effaçable dans « Réglages »).</p><button class="btn" onclick="exemple()">Charger un exemple</button></div>`;
+ const MAX = 8, MAXV = 6;
+ const filtre = `<div class="filtres" role="group" aria-label="Tâches de qui" style="margin:0 0 4px">${[['tous', 'Tout le monde'], [0, S.personnes[0]], [1, S.personnes[1]]].map(([k, n]) => `<button class="chip ${accQui === k ? 'on' : ''}" onclick="accQui=${typeof k === 'number' ? k : "'tous'"};rendu()">${k === 'tous' ? '' : avatar(k) + ' '}${esc(n)}</button>`).join('')}</div>`;
+ return `<div class="ph" style="margin-bottom:12px"><div><h1>${salut} 👋</h1><p>${JOURS[d.getDay()][0].toUpperCase() + JOURS[d.getDay()].slice(1)} ${d.getDate()} ${MOIS[d.getMonth()].replace('.', '')}</p></div></div>
+ ${bienvenue}
+ <div class="tdb">
+  <button class="carte bloc" onclick="F=F0();aller('taches')" aria-label="Voir les tâches">
+   <span class="tt">${ico('tache')}Tâches<span class="chev">›</span></span>
+   <span class="stats"><span class="stat"><span class="v">${c.jour}</span><span class="k">aujourd'hui</span></span><span class="stat ${c.retard ? 'ko' : ''}"><span class="v">${c.retard}</span><span class="k">en retard</span></span><span class="stat"><span class="v">${c.semaine}</span><span class="k">à venir (7 j)</span></span></span>
+   ${imp ? `<span class="imp" style="display:block"><span class="drap">⚑</span> Prochaine échéance importante : <b style="color:var(--txt)">${esc(imp.titre)}</b> · ${quand(imp.echeance)}</span>` : ''}
+  </button>
+  <button class="carte bloc" onclick="aller('courses')" aria-label="Voir la liste de courses">
+   <span class="tt">${ico('course')}Courses<span class="chev">›</span></span>
+   <span class="stats" style="grid-template-columns:1fr"><span class="stat"><span class="v">${nc || '✓'}</span><span class="k">${nc ? `article${nc > 1 ? 's' : ''} à acheter${np ? ` · ${np} dans le panier` : ''}` : np ? `tout est dans le panier (${np})` : 'la liste est vide'}</span></span></span>
+   <span class="imp mois-c" style="display:block">Ce mois-ci : <b style="color:var(--txt)">${euros(depMois)}</b> de courses</span>
+  </button>
+ </div>
+ <div class="raccourcis">
+  <button class="racc pri" onclick="dlgRapide('tache')">${ico('plus')}Tâche</button>
+  <button class="racc pri" onclick="dlgRapide('article')">${ico('plus')}Article</button>
+  <button class="racc" onclick="aller('courses')">${ico('course')}Courses</button>
+  <button class="racc" onclick="F=F0();F.vue='toutes';aller('taches')">${ico('tache')}Toutes les tâches</button>
+ </div>
+ <div class="carte"><h2>☀️ À faire aujourd'hui <span class="badge ${aFaire.some(t => etatTache(t) === 'retard') ? 'ko' : ''}">${aFaire.length}</span><span class="sp"></span><button class="lien pc" onclick="F=F0();aller('taches')">Toutes les tâches ›</button></h2>
+  ${filtre}
+  ${aFaire.length ? aFaire.slice(0, MAX).map(ligneAccueil).join('') + (aFaire.length > MAX ? `<p style="margin:8px 0 0"><button class="lien" onclick="F=F0();aller('taches')">+ ${aFaire.length - MAX} autre(s) tâche(s) ›</button></p>` : '')
+   : `<div class="vide" style="padding:14px"><b>🎉</b>Rien d'urgent aujourd'hui${accQui === 'tous' ? '' : ' pour ' + esc(S.personnes[accQui])}.</div>`}
+ </div>
+ <div class="carte"><h2>📅 À venir <span class="k" style="font-weight:500">7 prochains jours</span><span class="sp"></span>${avenir.length ? `<button class="lien" onclick="F=F0();F.vue='avenir';aller('taches')">Tout voir ›</button>` : ''}</h2>
+  ${avenir.length ? avenir.slice(0, MAXV).map(ligneAVenir).join('') + (avenir.length > MAXV ? `<p style="margin:8px 0 0"><button class="lien" onclick="F=F0();F.vue='avenir';aller('taches')">+ ${avenir.length - MAXV} autre(s) ›</button></p>` : '')
+   : '<p class="k" style="margin:0">Rien d\'autre de prévu dans les 7 prochains jours.</p>'}
+ </div>
+`;
+}
+/* Ajout rapide depuis l'accueil (tâche ou article), sans quitter l'écran */
+function dlgRapide(type) {
+ if (type === 'tache') {
+  $('dlg').innerHTML = `<form class="dlg" onsubmit="event.preventDefault();const n=S.taches.length;ajoutRapideTache('qa');if(S.taches.length>n)$('dlg').close();return false"><h3>${ico('plus')} Nouvelle tâche</h3>
+  <div class="fg"><label class="full">Intitulé<input type="text" id="qa-t" placeholder="Ex. : appeler le plombier" autocomplete="off" required></label>
+  <label>Pour qui<select id="qa-q">${optQui('tous')}</select></label><label>Échéance<input type="date" id="qa-d" value="${auj()}"></label></div>
+  <div class="act"><button type="button" class="btn" onclick="$('dlg').close();editerTache()">Plus d'options…</button><span class="sp"></span><button type="button" class="btn" onclick="$('dlg').close()">Annuler</button><button class="btn pri">Ajouter</button></div></form>`;
+  $('dlg').showModal(); setTimeout(() => $('qa-t').focus(), 30);
+ } else {
+  $('dlg').innerHTML = `<form class="dlg" onsubmit="event.preventDefault();ajoutArticle('qa-c');$('qa-msg').textContent='✓ '+$('toast-t').textContent;return false"><h3>${ico('course')} Ajouter aux courses</h3>
+  <label>Article<input type="text" id="qa-c" list="dl-art" placeholder="Ex. : 2 baguettes" autocomplete="off"></label>${datalist()}
+  <p class="k" id="qa-msg" style="min-height:1.5em;margin:8px 0 0;color:var(--ok)"></p><p class="k" style="margin:0">Ajoutez plusieurs articles à la suite, puis fermez.</p>
+  <div class="act"><button type="button" class="btn" onclick="$('dlg').close();aller('courses')">Voir la liste</button><span class="sp"></span><button type="button" class="btn" onclick="$('dlg').close()">Fermer</button><button class="btn pri">Ajouter</button></div></form>`;
+  $('dlg').showModal(); setTimeout(() => $('qa-c').focus(), 30);
+ }
+}
+
+/* =====================================================================
+   TÂCHES
+   ===================================================================== */
+const parDate = (a, b) => (a.echeance || '9999') < (b.echeance || '9999') ? -1 : (a.echeance || '9999') > (b.echeance || '9999') ? 1 : (b.prio ? 1 : 0) - (a.prio ? 1 : 0);
+const estRecurrente = t => !!t.recur && t.recur !== 'aucune';
+/* Carte de tâche : intitulé, personne, échéance, priorité, catégorie (le reste reste dans la fiche) */
+function ligneTache(t) {
+ const e = etatTache(t), rec = estRecurrente(t);
+ const date = t.fait
+  ? `<span class="badge ok">✓ fait ${t.faitLe ? quand(t.faitLe) : ''}</span>`
+  : t.echeance ? `<span class="badge ${e === 'retard' ? 'ko' : e === 'jour' ? 'warn' : ''}">${e === 'retard' ? 'En retard · ' : '📅 '}${quand(t.echeance)}${rec ? ' ↻' : ''}</span>` : (rec ? '<span class="badge">↻</span>' : '');
+ const info = [esc(nomQui(t.qui)), t.cat ? esc(t.cat) : ''].filter(Boolean).join(' · ');
+ const proj = t.projet ? (() => { const x = etatProjet(t); return `<span class="badge ${ENVOI_A[x][1]}" title="Projet budget : ${ENVOI_A[x][0].toLowerCase()}">€ ${euros(t.projet.montantCents)}</span>`; })() : '';
+ return `<div class="ligne ${t.fait ? 'fait' : ''} ${e === 'retard' ? 'retard' : ''}" id="t-${t.id}">
+  <button class="ck ${t.fait ? 'on' : ''}" onclick="basculerTache('${t.id}')" aria-label="${t.fait ? 'Marquer à faire' : 'Marquer comme fait'} : ${esc(t.titre)}">${ico('check')}</button>
+  <div class="tx" onclick="editerTache('${t.id}')"><div class="t">${t.prio ? '<span class="drap" title="Prioritaire" aria-label="Prioritaire">⚑</span>' : ''}${esc(t.titre)}${t.notes ? ' <span class="k" title="Contient des notes">📝</span>' : ''}</div><div class="m">${date}<span class="meta">${info}</span>${proj}</div></div>
+  <button class="ib" onclick="editerTache('${t.id}')" aria-label="Modifier ${esc(t.titre)}">${ico('crayon')}</button></div>`;
+}
+/* Filtres combinables : recherche + personne + catégorie + priorité (le statut est traité à part) */
+function correspond(t) {
+ if (F.qui === 'deux' && t.qui !== 'tous') return false;
+ if (typeof F.qui === 'number' && t.qui !== F.qui && t.qui !== 'tous') return false;
+ if (F.cat === '_aucune' ? !!t.cat : F.cat && t.cat !== F.cat) return false;
+ if (F.prio === 'oui' && !t.prio) return false;
+ if (F.prio === 'non' && t.prio) return false;
+ const q = norm(F.q || '');
+ if (q) { const txt = norm([t.titre, t.notes || '', t.cat || '', nomQui(t.qui)].join(' ')); if (!q.split(/\s+/).every(w => txt.includes(w))) return false; }
+ return true;
+}
+const nbFiltres = () => (F.qui !== 'tous') + !!F.cat + !!F.prio + !!F.statut;
+function categoriesConnues() { const c = new Set(S.categories); S.taches.forEach(t => t.cat && c.add(t.cat)); S.journal.forEach(j => j.cat && c.add(j.cat)); return [...c]; }
+function vTaches() {
+ const sel = (id, val, opts, lab, fn) => `<label class="vh" for="${id}">${lab}</label><select id="${id}" onchange="${fn}">${opts.map(([v, n]) => `<option value="${v}" ${String(val) === String(v) ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+ const nf = nbFiltres();
+ return `<div class="ph"><div><h1>Tâches</h1><p>Les choses à faire à la maison, à deux.</p></div><div class="sp"></div><button class="btn pri" onclick="editerTache()">${ico('plus')}Nouvelle tâche</button></div>
+ <div class="carte">
+  <div class="ajout"><input type="text" id="ta-t" placeholder="Ajouter une tâche puis Entrée" onkeydown="if(event.key==='Enter')ajoutRapideTache('ta')">
+  <select id="ta-q" aria-label="Pour qui">${optQui('tous')}</select>
+  <input type="date" id="ta-d" aria-label="Échéance" value="${F.vue === 'jour' && F.statut !== 'fait' ? auj() : ''}"><button class="btn pri" onclick="ajoutRapideTache('ta')">Ajouter</button></div>
+  <div class="recherche"><input type="search" id="ta-r" placeholder="🔍 Rechercher une tâche…" value="${esc(F.q)}" oninput="F.q=this.value;majTaches()" aria-label="Rechercher une tâche">
+   <button class="btn btn-filtres ${nf ? 'on' : ''}" onclick="F.ouvert=!F.ouvert;rendu()" aria-expanded="${F.ouvert}">Filtres${nf ? ' (' + nf + ')' : ''}</button></div>
+  <div class="fpanel ${F.ouvert ? 'ouvert' : ''}">
+   ${sel('fi-qui', F.qui, [['tous', 'Tout le monde'], [0, S.personnes[0]], [1, S.personnes[1]], ['deux', 'Tous les deux (ensemble)']], 'Personne', "F.qui=/^\\d$/.test(this.value)?Number(this.value):this.value;rendu()")}
+   ${sel('fi-cat', F.cat, [['', 'Toutes catégories'], ...categoriesConnues().map(c => [c, c]), ['_aucune', 'Sans catégorie']], 'Catégorie', 'F.cat=this.value;rendu()')}
+   ${sel('fi-prio', F.prio, [['', 'Toutes priorités'], ['oui', '⚑ Prioritaires'], ['non', 'Non prioritaires']], 'Priorité', 'F.prio=this.value;rendu()')}
+   ${sel('fi-st', F.statut, [['', 'Non terminées'], ['afaire', 'À faire (hors retard)'], ['retard', 'En retard'], ['fait', 'Terminées']], 'Statut', 'F.statut=this.value;F.nHist=40;rendu()')}
+  </div>
+ </div>
+ <div id="ta-corps">${corpsTaches()}</div>`;
+}
+function majTaches() { const c = $('ta-corps'); if (c) c.innerHTML = corpsTaches(); }
+function reinitFiltres() { const v = F.vue; F = F0(); F.vue = v; rendu(); }
+function corpsTaches() {
+ const base = S.taches.filter(correspond);
+ const nAct = nbFiltres() + (F.q.trim() ? 1 : 0);
+ const actifs = nAct ? `<div class="actifs">${nAct} filtre(s) actif(s) <button class="lien" onclick="reinitFiltres()">Réinitialiser</button></div>` : '';
+ if (F.statut === 'fait') return actifs + historiqueTaches(base);
+ let l = base.filter(t => !t.fait);
+ if (F.statut === 'retard') l = l.filter(t => etatTache(t) === 'retard');
+ if (F.statut === 'afaire') l = l.filter(t => etatTache(t) !== 'retard');
+ const g = { retard: [], jour: [], semaine: [], plus: [], sans: [] };
+ for (const t of l) g[etatTache(t)].push(t);
+ for (const k in g) g[k].sort(parDate);
+ const dem = plusJours(auj(), 1), demain = g.semaine.filter(t => t.echeance === dem), semaine = g.semaine.filter(t => t.echeance !== dem);
+ const nb = { jour: g.retard.length + g.jour.length, avenir: g.semaine.length + g.plus.length, toutes: l.length };
+ const seg = `<div class="seg" role="tablist" aria-label="Vue">${[['jour', "Aujourd'hui"], ['avenir', 'À venir'], ['toutes', 'Toutes']].map(([k, n]) => `<button role="tab" aria-selected="${F.vue === k}" class="${F.vue === k ? 'on' : ''}" onclick="F.vue='${k}';rendu()">${n}<span class="n ${k === 'jour' && g.retard.length ? 'ko' : ''}">${nb[k]}</span></button>`).join('')}</div>`;
+ const sec = (titre, liste, cl = '') => liste.length ? `<div class="grp ${cl}">${titre} <span class="badge">${liste.length}</span></div>${liste.map(ligneTache).join('')}` : '';
+ // les retards restent visibles dans toutes les vues
+ let corps = sec('En retard', g.retard, 'ko');
+ if (F.vue === 'jour') corps += sec("Aujourd'hui", g.jour);
+ else if (F.vue === 'avenir') corps += sec('Demain', demain) + sec('Dans les 7 jours', semaine) + sec('Plus tard', g.plus);
+ else corps += sec("Aujourd'hui", g.jour) + sec('Demain', demain) + sec('Dans les 7 jours', semaine) + sec('Plus tard', g.plus) + sec('Sans date', g.sans);
+ if (!corps) {
+  const proch = [...g.semaine, ...g.plus][0];
+  corps = `<div class="vide"><b>${nAct ? '🔍' : '🎉'}</b>${nAct ? 'Aucune tâche ne correspond aux filtres.' : F.vue === 'jour' ? "Rien à faire aujourd'hui." : F.vue === 'avenir' ? 'Rien de prévu pour les prochains jours.' : 'Tout est fait ! Ajoutez une tâche ci-dessus.'}
+   ${!nAct && F.vue === 'jour' && proch ? `<div class="k" style="margin-top:6px">Prochaine tâche : <b>${esc(proch.titre)}</b> (${quand(proch.echeance)}). <button class="lien" onclick="F.vue='avenir';rendu()">Voir « À venir »</button></div>` : ''}</div>`;
+ }
+ if (F.vue === 'jour' && g.sans.length) corps += `<p class="k" style="margin:10px 4px 0">${g.sans.length} tâche(s) sans date : <button class="lien" onclick="F.vue='toutes';rendu()">voir « Toutes »</button></p>`;
+ const sem = plusJours(auj(), -6), faites = S.taches.filter(t => t.fait && t.faitLe >= sem).length + S.journal.filter(j => j.faitLe >= sem).length;
+ return actifs + seg + corps + `<p style="margin:18px 0 0"><button class="btn sm" onclick="F.statut='fait';F.nHist=40;rendu();window.scrollTo(0,0)">✓ Tâches réalisées${faites ? ` · ${faites} ces 7 derniers jours` : ''}</button></p>`;
+}
+/* Historique : tâches simples terminées + réalisations des tâches récurrentes (journal) */
+function historiqueTaches(base) {
+ const ids = new Set(base.map(t => t.id));
+ const l = [
+  ...base.filter(t => t.fait).map(t => ({ d: t.faitLe || '', html: () => ligneTache(t) })),
+  ...S.journal.filter(j => correspond({ ...j, notes: '' })).map(j => ({ d: j.faitLe, html: () => ligneJournal(j) }))
+ ].sort((a, b) => b.d.localeCompare(a.d));
+ const a = auj(), h = plusJours(a, -1), s7 = plusJours(a, -6), m = a.slice(0, 7);
+ const groupe = d => d === a ? "Aujourd'hui" : d === h ? 'Hier' : d >= s7 ? '7 derniers jours' : d.startsWith(m) ? 'Plus tôt ce mois-ci' : 'Plus ancien';
+ let html = '', cur = '';
+ for (const x of l.slice(0, F.nHist)) { const g = groupe(x.d); if (g !== cur) { html += `<div class="grp">${g}</div>`; cur = g; } html += x.html(); }
+ const nSimples = base.filter(t => t.fait).length;
+ return `<div class="grp" style="margin-top:14px">✓ Tâches réalisées <span class="badge ok">${l.length}</span> <span class="sp" style="flex:1"></span><button class="lien" onclick="F.statut='';rendu()">← Retour aux tâches à faire</button></div>
+  ${html || '<div class="vide"><b>📭</b>Aucune tâche réalisée' + (nbFiltres() > 1 || F.q ? ' pour ces filtres' : '') + '.</div>'}
+  ${l.length > F.nHist ? `<p><button class="btn sm" onclick="F.nHist+=60;majTaches()">Afficher plus (${l.length - F.nHist} restantes)</button></p>` : ''}
+  ${nSimples ? `<p style="margin-top:12px"><button class="btn sm ko" onclick="viderFaites()">${ico('suppr')}Supprimer les tâches faites</button> <span class="k">L'historique des tâches récurrentes est conservé.</span></p>` : ''}`;
+}
+function ligneJournal(j) {
+ const t = S.taches.find(x => x.id === j.tacheId);
+ const info = [esc(nomQui(j.qui)), j.cat ? esc(j.cat) : ''].filter(Boolean).join(' · ');
+ return `<div class="ligne fait"><span class="ck on fixe" aria-hidden="true">${ico('check')}</span>
+  <div class="tx" style="cursor:default"><div class="t">${j.prio ? '<span class="drap">⚑</span>' : ''}${esc(j.titre)}</div><div class="m"><span class="badge ok">✓ fait ${quand(j.faitLe)}</span><span class="badge">↻ prévue le ${fd(j.echeance)}</span><span class="meta">${info}</span>${t ? '' : '<span class="meta">· tâche supprimée</span>'}</div></div>
+  <button class="ib" onclick="annulerRealisation('${j.id}')" aria-label="Annuler cette réalisation" title="Annuler cette réalisation">${ico('recur')}</button></div>`;
+}
+/* Annule une réalisation de tâche récurrente validée par erreur.
+   Si c'est la dernière réalisation de la tâche, son échéance revient à la date d'origine. */
+function annulerRealisation(jid) {
+ const j = S.journal.find(x => x.id === jid); if (!j) return;
+ const t = S.taches.find(x => x.id === j.tacheId);
+ const derniere = t && !S.journal.some(x => x.tacheId === j.tacheId && x.id !== j.id && (x.faitLe > j.faitLe || (x.faitLe === j.faitLe && S.journal.indexOf(x) < S.journal.indexOf(j))));
+ if (!confirm(derniere ? `Annuler la réalisation de « ${j.titre} » du ${fd(j.faitLe)} ?\n\nLa tâche reviendra à son échéance du ${fd(j.echeance)}.` : `Retirer cette réalisation de « ${j.titre} » de l'historique ?`)) return;
+ const annuler = instantane();
+ if (derniere) t.echeance = j.echeance;
+ S.journal = S.journal.filter(x => x.id !== jid); sauver(); rendu(); toast('Réalisation annulée', annuler);
+}
+const optQui = v => [['tous', 'Tous les deux'], [0, S.personnes[0]], [1, S.personnes[1]]].map(([k, n]) => `<option value="${k}" ${String(v) === String(k) ? 'selected' : ''}>${esc(n)}</option>`).join('');
+const lireQui = v => v === 'tous' ? 'tous' : Number(v);
+
+let dernierAjout = { cle: '', t: 0 };
+function ajoutRapideTache(p) {
+ const ti = $(p + '-t'), titre = ti.value.trim();
+ if (!titre) { ti.focus(); return; }
+ const cle = norm(titre) + '|' + ($(p + '-d').value || '');
+ if (cle === dernierAjout.cle && Date.now() - dernierAjout.t < 2500) { ti.value = ''; return; } // double validation involontaire
+ dernierAjout = { cle, t: Date.now() };
+ S.taches.push({ id: uid(), titre, notes: '', qui: $(p + '-q') ? lireQui($(p + '-q').value) : 'tous', echeance: $(p + '-d').value || '', recur: 'aucune', cat: '', prio: false, fait: false, faitLe: '', creeLe: auj(), projet: null });
+ PREMIERE = false; sauver(); rendu();
+ const ajoutee = S.taches[S.taches.length - 1], e = etatTache(ajoutee);
+ const cache = p === 'ta' && ((F.vue === 'jour' && !['jour', 'retard'].includes(e)) || (F.vue === 'avenir' && !['semaine', 'plus', 'retard'].includes(e)) || !correspond(ajoutee) || F.statut);
+ toast(cache ? `Tâche ajoutée (${e === 'sans' ? 'sans date' : quand(ajoutee.echeance)}) : visible dans « Toutes »` : 'Tâche ajoutée');
+ const n = $(p + '-t'); if (n) n.focus();
+}
+/* Mois suivant en gardant le jour d'origine (31 -> 30 avril -> 31 mai, sans dériver) */
+function moisAncre(x, jour) { const d = versDate(x), y = d.getFullYear(), m = d.getMonth() + 1, fin = new Date(y, m + 1, 0).getDate(); return iso(new Date(y, m, Math.min(jour, fin))); }
+function prochaine(t) {
+ let d = t.echeance || auj();
+ if (t.recur === 'mois' && !t.jourRef) t.jourRef = versDate(d).getDate();
+ const pas = x => t.recur === 'jour' ? plusJours(x, 1) : t.recur === 'semaine' ? plusJours(x, 7) : t.recur === 'deuxsem' ? plusJours(x, 14) : moisAncre(x, t.jourRef);
+ do d = pas(d); while (d <= auj()); // une seule prochaine échéance, toujours dans le futur
+ return d;
+}
+const VERROU = {}; // évite qu'un double clic valide deux occurrences
+function basculerTache(id) {
+ const t = S.taches.find(x => x.id === id); if (!t) return;
+ const maintenant = Date.now(); if (VERROU[id] && maintenant - VERROU[id] < 1200) return; VERROU[id] = maintenant;
+ if (!t.fait && estRecurrente(t)) {
+  const deja = S.journal.some(j => j.tacheId === t.id && j.faitLe === auj());
+  if (deja && t.echeance > auj() && !confirm(`« ${t.titre} » a déjà été faite aujourd'hui.\n\nValider aussi l'occurrence prévue ${quand(t.echeance)} ?`)) return;
+  const annuler = instantane();
+  S.journal.unshift({ id: uid(), tacheId: t.id, titre: t.titre, qui: t.qui, cat: t.cat, prio: !!t.prio, echeance: t.echeance || auj(), faitLe: auj() });
+  if (S.journal.length > 1500) S.journal.length = 1500;
+  t.derniereFois = auj(); t.echeance = prochaine(t);
+  sauver(); rendu(); toast('Bravo ! Prochaine fois : ' + quand(t.echeance), annuler); return;
+ }
+ const annuler = instantane();
+ t.fait = !t.fait; t.faitLe = t.fait ? auj() : '';
+ sauver();
+ const el = $('t-' + id);
+ if (el && t.fait) { el.style.opacity = '0'; el.style.transform = 'translateX(16px)'; setTimeout(rendu, 220); } else rendu();
+ toast(t.fait ? 'Tâche terminée ✓' : 'Tâche remise à faire', annuler);
+}
+function viderFaites() {
+ const garder = t => false; // plus de blocage : Mon budget est simplement prévenu
+ const n = S.taches.filter(t => t.fait && !garder(t)).length, g = S.taches.filter(t => t.fait && garder(t)).length;
+ if (!n) { if (g) toast(`${g} tâche(s) conservée(s) : leur projet n'a pas encore été importé dans Mon budget.`); return; }
+ if (!confirm(`Supprimer définitivement ${n} tâche(s) terminée(s) ?${g ? `\n\n${g} tâche(s) seront conservées car leur projet n'a pas encore été confirmé dans Mon budget.` : ''}`)) return;
+ const annuler = instantane(); S.taches = S.taches.filter(t => !t.fait || garder(t)); sauver(); rendu(); toast(n + ' tâche(s) supprimée(s)', annuler);
+}
+function editerTache(id) {
+ if (id && !S.taches.some(x => x.id === id)) { rendu(); return; }
+ const t = id ? S.taches.find(x => x.id === id) : { titre: '', notes: '', qui: 'tous', echeance: '', recur: 'aucune', cat: '', prio: false, projet: null };
+ const p = t.projet || { montantCents: 0, date: t.echeance || auj(), paiements: 1, statut: 'a_planifier' };
+ $('dlg').innerHTML = `<form class="dlg" method="dialog" onsubmit="return enregTache(event,'${id || ''}')">
+ <h3>${id ? 'Modifier la tâche' : 'Nouvelle tâche'}</h3>
+ <div class="fg">
+  <label class="full">Titre<input type="text" id="f-titre" required value="${esc(t.titre)}" placeholder="Ex. : changer le filtre de la hotte"></label>
+  <label>Pour qui<select id="f-qui">${optQui(t.qui)}</select></label>
+  <label>Échéance<input type="date" id="f-date" value="${esc(t.echeance)}"></label>
+  <label>Répétition<select id="f-recur">${Object.entries(RECUR).map(([k, n]) => `<option value="${k}" ${t.recur === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+  <label>Catégorie<select id="f-cat"><option value="">—</option>${[...S.categories, ...(t.cat && !S.categories.includes(t.cat) ? [t.cat] : [])].map(c => `<option value="${esc(c)}" ${t.cat === c ? 'selected' : ''}>${esc(c)}${S.categories.includes(c) ? '' : ' (retirée des réglages)'}</option>`).join('')}</select></label>
+  <label class="full">Notes<textarea id="f-notes" rows="2">${esc(t.notes)}</textarea></label>
+  <label class="toggle full"><input type="checkbox" id="f-prio" ${t.prio ? 'checked' : ''}> <span><span class="drap">⚑</span> Prioritaire <span class="k">— indépendant de l'échéance</span></span></label>
+ </div>
+ ${id && estRecurrente(t) ? (() => { const r = S.journal.filter(j => j.tacheId === id); return `<p class="note" style="margin:12px 0 0">↻ ${RECUR[t.recur]} · faite ${r.length} fois${r.length ? `, dernière fois ${quand(r[0].faitLe)}` : ''}. Prochaine échéance : <b>${fd(t.echeance)}</b>.<br><span class="k">Pour arrêter la répétition sans supprimer la tâche ni son historique, choisissez « Une seule fois ».</span></p>`; })() : ''}
+ <fieldset><legend>💶 Cette tâche coûte de l'argent</legend>
+  <label class="toggle"><input type="checkbox" id="f-proj" ${t.projet ? 'checked' : ''} onchange="$('f-pz').hidden=!this.checked"> Créer un projet dans « Mon budget »</label>
+  <p class="k" style="margin:6px 0 0">${t.projet ? `Mon budget : <b>${ENVOI_A[etatProjet(t)][0].toLowerCase()}</b>. Le projet est relié à cette tâche : modifier la tâche met à jour le même projet.` : `Cochez pour créer le projet dans Mon budget : après l'enregistrement, vous pourrez simuler l'achat et choisir la meilleure date (ou en forcer une).`}</p>
+  ${id && t.projet ? `<p style="margin:6px 0 0"><button type="button" class="btn sm" onclick="simulerTache('${id}')">📈 Simuler l'achat / changer la date dans Mon budget</button></p>` : ''}
+  <div class="fg" id="f-pz" ${t.projet ? '' : 'hidden'} style="margin-top:10px">
+   <label>Montant estimé (€)<input type="text" inputmode="decimal" id="f-mt" value="${p.montantCents ? (p.montantCents / 100).toString().replace('.', ',') : ''}" placeholder="Ex. : 120"></label>
+   <label>Date provisoire de la dépense<input type="date" id="f-pd" value="${esc(p.date)}"></label>
+   <label>Paiement en<select id="f-pp">${[1, 2, 3, 4, 6, 10, 12].map(n => `<option value="${n}" ${p.paiements === n ? 'selected' : ''}>${n === 1 ? 'une fois' : n + ' fois'}</option>`).join('')}</select></label>
+  </div>
+ </fieldset>
+ <p class="err k" id="f-err" style="color:var(--ko)"></p>
+ <div class="act">${id ? `<button type="button" class="btn ko" onclick="supprTache('${id}')">${ico('suppr')}Supprimer</button><span class="sp"></span>` : ''}
+ <button type="button" class="btn" onclick="$('dlg').close()">Annuler</button><button class="btn pri">Enregistrer</button></div></form>`;
+ $('dlg').showModal(); setTimeout(() => $('f-titre').focus(), 30);
+}
+function enregTache(ev, id) {
+ ev.preventDefault();
+ if (id && !S.taches.some(x => x.id === id)) { $('dlg').close(); rendu(); toast("Cette tâche n'existe plus (supprimée entre-temps)."); return false; }
+ const titre = $('f-titre').value.trim(); if (!titre) return false;
+ let projet = null;
+ if ($('f-proj').checked) {
+  const mt = versCents($('f-mt').value);
+  if (!mt || mt <= 0) { $('f-err').textContent = 'Indiquez un montant estimé supérieur à 0 € pour créer le projet.'; $('f-mt').focus(); return false; }
+  if (!$('f-pd').value) { $('f-err').textContent = 'Indiquez la date prévue de la dépense.'; return false; }
+  const ancien = id && S.taches.find(x => x.id === id).projet;
+  projet = { montantCents: mt, date: $('f-pd').value, paiements: Number($('f-pp').value), statut: ancien && ancien.statut in STATUTS ? ancien.statut : 'a_planifier', fichierLe: ancien ? ancien.fichierLe || '' : '', confirmeLe: ancien ? ancien.confirmeLe || '' : '' };
+ }
+ const val = { titre, notes: $('f-notes').value.trim(), qui: lireQui($('f-qui').value), echeance: $('f-date').value, recur: $('f-recur').value, cat: $('f-cat').value, prio: $('f-prio').checked, projet };
+ if (val.recur !== 'aucune' && !val.echeance) val.echeance = auj();
+ const avant = id && S.taches.find(x => x.id === id);
+ // jour de référence des répétitions mensuelles : repris de l'échéance saisie
+ val.jourRef = val.recur === 'mois' ? (avant && avant.recur === 'mois' && avant.echeance === val.echeance && avant.jourRef ? avant.jourRef : versDate(val.echeance).getDate()) : undefined;
+ if (avant && avant.fait && val.recur !== 'aucune') { avant.fait = false; avant.faitLe = ''; } // une tâche terminée rendue récurrente redevient active
+ const demander = projet && (!avant || !avant.projet || avant.projet.montantCents !== projet.montantCents || avant.projet.paiements !== projet.paiements);
+ let tid = id;
+ if (id) { Object.assign(avant, val); if (val.jourRef === undefined) delete avant.jourRef; }
+ else { const nt = { id: uid(), fait: false, faitLe: '', creeLe: auj(), ...val }; if (nt.jourRef === undefined) delete nt.jourRef; S.taches.push(nt); tid = nt.id; }
+ PREMIERE = false; sauver(); $('dlg').close(); rendu(); toast(id ? 'Tâche modifiée' : 'Tâche ajoutée');
+ if (demander) proposerSimulation(tid);
+ return false;
+}
+/* Simulation de l'achat : elle se fait dans Mon budget (qui connaît le solde, les charges et le seuil de sécurité) */
+function simulerTache(id) {
+ emettreAchats();
+ const w = window.open('budget.html#simtache=' + encodeURIComponent(id) + '&t=' + Date.now(), 'budget-maison');
+ if (!w) toast("Le navigateur a bloqué l'ouverture de Mon budget : autorisez les fenêtres pour cette page.");
+ else if ($('dlg').open) $('dlg').close();
+}
+function proposerSimulation(id) {
+ const t = S.taches.find(x => x.id === id); if (!t || !t.projet) return;
+ $('dlg').innerHTML = `<div class="dlg"><h3>📈 Simuler l'achat ?</h3>
+ <p>Le projet « <b>${esc(t.titre)}</b> » (${euros(t.projet.montantCents)}${t.projet.paiements > 1 ? ' en ' + t.projet.paiements + ' fois' : ''}) a été transmis à Mon budget.</p>
+ <p class="k">Mon budget va comparer plusieurs dates avec votre solde, vos charges et votre seuil de sécurité, et vous proposer la meilleure. Vous pouvez la retenir ou forcer une autre date. La date choisie revient ici automatiquement.</p>
+ <div class="act"><button class="btn" onclick="$('dlg').close()">Plus tard</button><span class="sp"></span><button class="btn pri" onclick="simulerTache('${id}')">Simuler dans Mon budget</button></div></div>`;
+ $('dlg').showModal();
+}
+/* Retour de Mon budget : date, montant et statut choisis après la simulation */
+function adopterRetours() {
+ const M = MM(); if (!M || BLOQUE || !S || $('dlg').open) return false;
+ let ac; try { ac = M.echange.accuses(); } catch (e) { return false; }
+ let n = 0;
+ for (const t of S.taches) {
+  if (!t.projet || t.projet.demo) continue;
+  const k = ac[M.echange.ref('tache', t.id)], r = k && k.retour; if (!r || r.rev !== M.hash(donneesProjet(t))) continue;
+  const p = t.projet; if (!ISO.test(r.date || '') || !(r.montantCents > 0)) continue;
+  const pa = r.paiements >= 1 ? r.paiements : p.paiements, st = r.statut in STATUTS ? r.statut : p.statut;
+  if (p.date !== r.date || p.montantCents !== r.montantCents || p.paiements !== pa || p.statut !== st) { p.date = r.date; p.montantCents = r.montantCents; p.paiements = pa; p.statut = st; n++; }
+ }
+ if (n) { sauver(); rendu(); toast(`${n} projet(s) mis à jour d'après la simulation dans Mon budget`); }
+ return n > 0;
+}
+function supprTache(id) {
+ const t = S.taches.find(x => x.id === id);
+ if (t && t.projet && etatProjet(t) === 'importe' && !confirm(`Le projet de ${euros(t.projet.montantCents)} restera dans Mon budget, qui sera seulement prévenu que la tâche est supprimée. Continuer ?`)) return;
+ if (t && estRecurrente(t)) { const n = S.journal.filter(j => j.tacheId === id).length; if (!confirm(`« ${t.titre} » est une tâche récurrente (${RECUR[t.recur].toLowerCase()}).
+
+La supprimer arrête toutes ses prochaines occurrences. ${n ? `L'historique de ses ${n} réalisation(s) est conservé. ` : ''}Les autres tâches ne sont pas touchées.
+
+Astuce : pour seulement arrêter la répétition, choisissez « Une seule fois » dans la fiche.
+
+Supprimer la tâche ?`)) return; }
+ const annuler = instantane(); S.taches = S.taches.filter(x => x.id !== id); sauver(); $('dlg').close(); rendu(); toast('Tâche supprimée', annuler);
+}
+
+/* =====================================================================
+   COURSES
+   ===================================================================== */
+function datalist() {
+ return `<datalist id="dl-art">${Object.values(S.catalogue).sort((a, b) => b.n - a.n).slice(0, 200).map(c => `<option value="${esc(c.nom)}">`).join('')}</datalist>`;
+}
+const sing = x => norm(x).replace(/[sx]$/, ''); // « Baguette » et « baguettes » sont le même article
+const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
+function analyserSaisie(brut) {
+ // « 2 lait », « lait x2 » ou « 500g farine » : la quantité est extraite
+ let qte = '', nom = brut.trim(), m;
+ if ((m = nom.match(/^(\d+(?:[.,]\d+)?\s*(?:kg|g|l|cl|ml|x)?)\s+(.+)$/i))) { qte = m[1]; nom = m[2]; }
+ else if ((m = nom.match(/^(.+?)\s+[x×]\s*(\d+)$/i))) { nom = m[1]; qte = m[2]; }
+ return { nom: cap(nom.trim()), qte: qte.trim() };
+}
+function flash(id) { const el = $('c-' + id); if (el) { el.classList.add('flash'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
+function ajoutArticle(inputId, nomDirect) {
+ const el = inputId ? $(inputId) : null;
+ const brut = nomDirect || (el ? el.value.trim() : '');
+ if (!brut) { if (el) el.focus(); return; }
+ const { nom, qte } = analyserSaisie(brut);
+ if (!nom) return;
+ // article déjà présent : on le met à jour au lieu de créer un doublon
+ const deja = S.courses.find(c => sing(c.nom) === sing(nom));
+ if (deja) {
+  const annuler = instantane(); let msg;
+  if (deja.coche) { deja.coche = false; if (qte) deja.qte = qte; msg = `« ${deja.nom} » était dans le panier : remis dans les articles à acheter`; }
+  else if (qte && qte !== deja.qte) { msg = `« ${deja.nom} » est déjà dans la liste : quantité ${deja.qte ? deja.qte + ' → ' : ''}${qte}`; deja.qte = qte; }
+  else msg = `« ${deja.nom} » est déjà dans la liste`;
+  if (el) el.value = ''; sauver(); rendu(); flash(deja.id);
+  const n = inputId && $(inputId); if (n) n.focus();
+  if (msg.endsWith('dans la liste')) toast(msg, () => dlgQte(deja.id), 'Quantité'); else toast(msg, annuler);
+  return;
+ }
+ const cat = S.catalogue[norm(nom)];
+ const rayon = devinerRayon(nom);
+ S.courses.push({ id: uid(), nom: cat ? cat.nom : nom, qte, rayon, prixCents: null, coche: false });
+ if (el) el.value = '';
+ PREMIERE = false; sauver(); rendu();
+ const n = inputId && $(inputId); if (n) n.focus();
+ toast(`« ${nom} » ajouté · ${(RAY[rayon] || { n: 'Autre' }).n}`);
+}
+let panierOuvert = false;
+function ligneArt(c) {
+ return `<div class="ligne art ${c.coche ? 'fait' : ''}" id="c-${c.id}">
+  <button class="ck carre ${c.coche ? 'on' : ''}" onclick="cocherArticle('${c.id}')" aria-label="${c.coche ? 'Remettre dans les articles à acheter' : 'Mettre dans le panier'} : ${esc(c.nom)}">${ico('check')}</button>
+  <div class="tx" onclick="cocherArticle('${c.id}')"><div class="t">${esc(c.nom)}</div></div>
+  ${c.prixCents ? `<span class="prix">${euros(c.prixCents)}</span>` : ''}
+  <button class="qte ${c.qte ? '' : 'vide'}" onclick="dlgQte('${c.id}')" aria-label="Quantité de ${esc(c.nom)} : ${c.qte ? esc(c.qte) : 'non précisée'}">${c.qte ? esc(c.qte) : '+ qté'}</button>
+  <button class="ib" onclick="editerArticle('${c.id}')" aria-label="Modifier ${esc(c.nom)}">${ico('crayon')}</button></div>`;
+}
+function vCourses() {
+ const afaire = S.courses.filter(c => !c.coche), panier = S.courses.filter(c => c.coche);
+ const parRayon = {}; for (const c of afaire) { const k = c.rayon in RAY ? c.rayon : 'autre'; (parRayon[k] = parRayon[k] || []).push(c); }
+ const listes = S.rayons.filter(r => parRayon[r.k]).map(r => `<div class="grp rayon"><span class="e">${esc(r.e)}</span>${esc(r.n)} <span class="badge">${parRayon[r.k].length}</span></div>${parRayon[r.k].map(ligneArt).join('')}`).join('');
+ // suggestions : articles souvent achetés qui ne sont pas déjà sur la liste
+ const dans = new Set(S.courses.map(c => sing(c.nom)));
+ const sugg = Object.values(S.catalogue).filter(c => !dans.has(sing(c.nom))).sort((a, b) => b.n - a.n || (b.last || '').localeCompare(a.last || '')).slice(0, 14);
+ const totalPanier = panier.reduce((s, c) => s + (c.prixCents || 0), 0), nt = S.courses.length;
+ const progres = nt ? `<div class="progres"><span><b>${afaire.length ? afaire.length + ' à acheter' : 'Tout est dans le panier 🎉'}</b>${panier.length ? ` · ${panier.length} dans le panier` : ''}</span><span class="barre" aria-hidden="true"><i style="width:${Math.round(panier.length / nt * 100)}%"></i></span></div>` : '';
+ return `<div class="ph"><div><h1>Liste de courses</h1><p>Rangée par rayon automatiquement. Touchez un article pour le mettre dans le panier.</p></div><div class="sp"></div><button class="btn pri" onclick="terminerCourses()">${ico('check')}Mes courses sont finies</button></div>
+ <div class="cols"><div class="col-g">
+ <div class="carte">
+  <div class="ajout"><input type="text" id="co-a" list="dl-art" placeholder="Ajouter un article (ex. : 2 baguettes) puis Entrée" onkeydown="if(event.key==='Enter')ajoutArticle('co-a')"><button class="btn pri" onclick="ajoutArticle('co-a')">${ico('plus')}Ajouter</button></div>
+  ${datalist()}
+  ${sugg.length ? `<div class="k" style="margin:12px 0 6px">Souvent achetés — un clic pour ajouter :</div><div class="sugg">${sugg.map(c => `<button onclick="ajoutArticle(null,this.dataset.n)" data-n="${esc(c.nom)}">${RAY[c.rayon] ? RAY[c.rayon].e : ''} ${esc(c.nom)}</button>`).join('')}</div>` : ''}
+ </div>
+ ${progres}
+ ${listes || (panier.length ? '' : '<div class="carte vide"><b>🛒</b>La liste est vide. Ajoutez des articles ci-dessus.</div>')}
+ ${panier.length ? `<details class="dpanier" ${panierOuvert ? 'open' : ''} ontoggle="panierOuvert=this.open"><summary>🧺 Dans le panier <span class="badge ok">${panier.length}</span> <span class="k" style="text-transform:none;letter-spacing:0;font-weight:500">— touchez pour décocher</span></summary>${panier.map(ligneArt).join('')}</details>
+ <div class="panier"><div><b>${panier.length} article${panier.length > 1 ? 's' : ''} dans le panier</b>${totalPanier ? `<div style="font-size:12.5px;opacity:.85">Prix notés : ${euros(totalPanier)}</div>` : afaire.length ? `<div style="font-size:12.5px;opacity:.85">${afaire.length} restant(s)</div>` : ''}</div><span class="sp"></span><button class="btn" onclick="terminerCourses()">Mes courses sont finies</button></div>` : ''}
+ </div><div class="col-d">${vPenseBete()}</div></div>
+ ${vHistorique()}`;
+}
+function cocherArticle(id) {
+ const c = S.courses.find(x => x.id === id); if (!c) return;
+ c.coche = !c.coche; sauver();
+ const el = $('c-' + id);
+ if (el) { el.style.opacity = '0'; el.style.transform = c.coche ? 'translateX(16px)' : 'translateX(-16px)'; setTimeout(rendu, 180); } else rendu();
+}
+/* Quantité : − / + sur le nombre en tête (« 2 », « 500 g », « 3 x »), ou saisie libre */
+function pasQte(v, d) { const m = String(v || '').trim().match(/^(\d+)(.*)$/); if (!m) return d > 0 ? (v ? v : '2') : v; if (/^\s*(k?g|[mc]?l)\b/i.test(m[2])) return v; /* « 500 g » : à modifier au clavier */ const n = Number(m[1]) + d; return n <= 0 ? '' : n === 1 && !m[2].trim() && d < 0 ? '1' : n + m[2]; }
+function dlgQte(id) {
+ const c = S.courses.find(x => x.id === id); if (!c) { rendu(); return; }
+ $('dlg').innerHTML = `<form class="dlg" onsubmit="return enregQte(event,'${id}')"><h3>${esc(c.nom)}</h3>
+ <label for="q-v">Quantité</label>
+ <div class="pas" style="margin-top:6px"><button type="button" onclick="$('q-v').value=pasQte($('q-v').value,-1)" aria-label="Moins">−</button><input type="text" id="q-v" value="${esc(c.qte || '1')}" placeholder="Ex. : 2, 500 g, 1 paquet"><button type="button" onclick="$('q-v').value=pasQte($('q-v').value||'1',1)" aria-label="Plus">+</button></div>
+ <div class="act"><button type="button" class="btn ko" onclick="supprArticle('${id}')">${ico('suppr')}Retirer</button><span class="sp"></span><button type="button" class="btn" onclick="$('dlg').close()">Annuler</button><button class="btn pri">OK</button></div></form>`;
+ $('dlg').showModal(); setTimeout(() => $('q-v').select(), 30);
+}
+function enregQte(ev, id) {
+ ev.preventDefault();
+ const c = S.courses.find(x => x.id === id); if (!c) { $('dlg').close(); rendu(); return false; }
+ const v = $('q-v').value.trim(); c.qte = v === '1' && !c.qte ? '' : v; sauver(); $('dlg').close(); rendu(); return false;
+}
+function editerArticle(id) {
+ const c = S.courses.find(x => x.id === id); if (!c) { rendu(); return; }
+ $('dlg').innerHTML = `<form class="dlg" onsubmit="return enregArticle(event,'${id}')"><h3>Modifier l'article</h3>
+ <div class="fg"><label class="full">Article<input type="text" id="a-n" required value="${esc(c.nom)}"></label>
+ <label>Quantité<input type="text" id="a-q" value="${esc(c.qte)}" placeholder="Ex. : 2, 500 g"></label>
+ <label>Prix (facultatif, €)<input type="text" inputmode="decimal" id="a-p" value="${c.prixCents ? (c.prixCents / 100).toString().replace('.', ',') : ''}"></label>
+ <label class="full">Rayon<select id="a-r">${S.rayons.map(r => `<option value="${esc(r.k)}" ${c.rayon === r.k ? 'selected' : ''}>${esc(r.e)} ${esc(r.n)}</option>`).join('')}</select></label></div>
+ <p class="k">Le rayon choisi sera retenu pour les prochaines fois.</p>
+ <p class="k" id="a-err" style="color:var(--ko)"></p>
+ <div class="act"><button type="button" class="btn ko" onclick="supprArticle('${id}')">${ico('suppr')}Retirer</button><span class="sp"></span><button type="button" class="btn" onclick="$('dlg').close()">Annuler</button><button class="btn pri">Enregistrer</button></div></form>`;
+ $('dlg').showModal();
+}
+function enregArticle(ev, id) {
+ ev.preventDefault();
+ const c = S.courses.find(x => x.id === id);
+ if (!c) { $('dlg').close(); rendu(); toast("Cet article n'est plus dans la liste."); return false; }
+ const px = $('a-p').value.trim() ? versCents($('a-p').value) : null;
+ if ($('a-p').value.trim() && (px === null || px <= 0)) { $('a-err').textContent = 'Prix invalide. Exemple : 2,35'; $('a-p').focus(); return false; }
+ const nom = cap($('a-n').value.trim()) || c.nom;
+ const autre = S.courses.find(x => x.id !== id && sing(x.nom) === sing(nom));
+ if (autre) { $('a-err').textContent = `« ${autre.nom} » est déjà dans la liste : modifiez plutôt celui-ci, ou retirez cet article.`; return false; }
+ c.nom = nom; c.qte = $('a-q').value.trim(); c.prixCents = px; c.rayon = $('a-r').value;
+ const k = norm(c.nom); if (S.catalogue[k]) S.catalogue[k].rayon = c.rayon; else S.catalogue[k] = { nom: c.nom, rayon: c.rayon, n: 0, last: '' };
+ sauver(); $('dlg').close(); rendu(); flash(c.id); toast('Article modifié'); return false;
+}
+function supprArticle(id) { const c = S.courses.find(x => x.id === id); const annuler = instantane(); S.courses = S.courses.filter(x => x.id !== id); sauver(); $('dlg').close(); rendu(); toast(`${c ? '« ' + c.nom + ' » retiré' : 'Article retiré'}`, annuler); }
+
+/* ---------- clôture des courses ----------
+   Achetés = articles cochés (ou tous, avec confirmation). Les autres restent dans la liste.
+   Une session est créée dès qu'il y a un montant ou des articles achetés. */
+function optPayeur(v) { return [['joint', 'Compte commun'], ['0', S.personnes[0]], ['1', S.personnes[1]]].map(([k, n]) => `<option value="${k}" ${String(v) === k ? 'selected' : ''}>${esc(n)}</option>`).join(''); }
+function terminerCourses() {
+ const panier = S.courses.filter(c => c.coche), reste = S.courses.filter(c => !c.coche);
+ const total = panier.reduce((s, c) => s + (c.prixCents || 0), 0), dernier = S.achats[0] ? S.achats[0].payePar : 'joint';
+ const noms = l => l.slice(0, 12).map(c => esc((c.qte ? c.qte + ' ' : '') + c.nom)).join(', ') + (l.length > 12 ? ` et ${l.length - 12} autre(s)` : ''); /* liste courte : la fenêtre reste lisible sur téléphone */
+ $('dlg').innerHTML = `<form class="dlg" onsubmit="return validerCourses(event)"><h3>✅ Mes courses sont finies</h3>
+ <div class="recap">🧺 <b>${panier.length} article(s) acheté(s)</b>${panier.length ? ' — gardés dans l\'historique' : ' (aucun article coché)'}${reste.length ? `<br>📝 <b>${reste.length} non acheté(s)</b> — restent dans la liste pour la prochaine fois<div class="k" style="margin-top:2px">${noms(reste)}</div>` : ''}</div>
+ <div class="fg">
+  <label>Montant total payé (€)<input type="text" inputmode="decimal" id="tc-m" value="${total ? (total / 100).toString().replace('.', ',') : ''}" placeholder="Ex. : 87,45"></label>
+  <label>Date<input type="date" id="tc-d" value="${auj()}" required></label>
+  <label class="full">Magasin<input type="text" id="tc-s" list="dl-mag" placeholder="Ex. : Carrefour, marché…" value="${esc(S.magasins[0] || '')}"></label>
+  <datalist id="dl-mag">${S.magasins.map(m => `<option value="${esc(m)}">`).join('')}</datalist>
+  <label class="full">Payé par<select id="tc-p">${optPayeur(dernier)}</select></label>
+  ${reste.length ? `<label class="toggle full"><input type="checkbox" id="tc-tout" onchange="$('tc-warn').hidden=!this.checked"> J'ai tout acheté (compter aussi les ${reste.length} article(s) non coché(s))</label>
+  <p class="note full" id="tc-warn" hidden style="margin:0">Ces ${reste.length} article(s) seront comptés comme achetés et retirés de la liste. Une confirmation vous sera demandée.</p>` : ''}
+ </div>
+ <p class="k">La dépense sera transmise automatiquement à Mon budget (déjà validée). Sans montant, la session est gardée dans l'historique et le montant pourra être ajouté plus tard.</p>
+ <p class="k" id="tc-err" style="color:var(--ko)"></p>
+ <div class="act"><button type="button" class="btn" onclick="$('dlg').close()">Annuler</button><button class="btn pri" id="tc-go">Enregistrer</button></div></form>`;
+ $('dlg').showModal(); setTimeout(() => $('tc-m').focus(), 30);
+}
+function validerCourses(ev) {
+ ev.preventDefault();
+ const brut = $('tc-m').value.trim(), m = brut ? versCents(brut) : 0;
+ if (brut && (!m || m <= 0)) { $('tc-err').textContent = 'Montant invalide. Exemple : 87,45'; return false; }
+ if (!$('tc-d').value) { $('tc-err').textContent = 'Indiquez la date des courses.'; return false; }
+ const tout = $('tc-tout') && $('tc-tout').checked;
+ const reste = S.courses.filter(c => !c.coche);
+ if (tout && reste.length && !confirm(`Compter aussi comme achetés les ${reste.length} article(s) non coché(s) ?\n\n${reste.map(c => '• ' + c.nom).join('\n')}\n\nIls seront retirés de la liste.`)) return false;
+ const achete = S.courses.filter(c => tout || c.coche);
+ if (!m && !achete.length) { $('tc-err').textContent = 'Indiquez le montant payé, ou cochez au moins un article acheté.'; return false; }
+ const annuler = instantane(), d = $('tc-d').value, mag = $('tc-s').value.trim(), ids = new Set(achete.map(c => c.id));
+ for (const c of achete) { const k = norm(c.nom), x = S.catalogue[k] || { nom: c.nom, rayon: c.rayon, n: 0 }; x.n++; x.last = d; x.rayon = c.rayon; S.catalogue[k] = x; }
+ // session de courses : tout ce qu'il faudra pour le rapprochement avec Mon budget
+ S.achats.unshift({ id: uid(), date: d, magasin: mag, montantCents: m || 0, payePar: $('tc-p').value,
+  articles: achete.map(c => c.nom), detail: achete.map(c => ({ nom: c.nom, qte: c.qte || '', rayon: c.rayon })),
+  creeLe: new Date().toISOString(), fichierLe: '', confirmeLe: '' });
+ S.courses = S.courses.filter(c => !ids.has(c.id)); // les articles non achetés restent dans la liste
+ if (mag) S.magasins = [mag, ...S.magasins.filter(x => x !== mag)].slice(0, 12);
+ panierOuvert = false; sauver(); $('dlg').close(); rendu();
+ const r = S.courses.length;
+ toast((m ? `Courses enregistrées : ${euros(m)}` : 'Courses enregistrées sans montant (à compléter dans l\'historique)') + (r ? ` · ${r} article(s) gardé(s) pour la prochaine fois` : ''), annuler);
+ return false;
+}
+
+/* ---------- pense-bête (modifiable) ---------- */
+let pbEdition = false;
+function vPenseBete() {
+ const dans = new Set(S.courses.map(c => norm(c.nom).replace(/[sx]$/, '')));
+ const estDans = n => dans.has(norm(n).replace(/[sx]$/, ''));
+ const total = S.penseBete.reduce((s, g) => s + g.items.length, 0), pris = S.penseBete.reduce((s, g) => s + g.items.filter(estDans).length, 0);
+ let corps;
+ if (pbEdition) {
+  corps = S.penseBete.map((g, gi) => `<div class="pb-g">
+   <div class="pb-ed"><input type="text" value="${esc(g.titre)}" aria-label="Nom de la rubrique" onchange="pbTitre(${gi},this.value)" style="font-weight:650"><button class="ib" onclick="pbSupprGroupe(${gi})" aria-label="Supprimer la rubrique ${esc(g.titre)}">${ico('suppr')}</button></div>
+   ${g.items.map((it, ii) => `<div class="pb-ed"><input type="text" value="${esc(it)}" aria-label="Élément" onchange="pbItem(${gi},${ii},this.value)"><button class="ib" onclick="pbSupprItem(${gi},${ii})" aria-label="Supprimer ${esc(it)}">${ico('suppr')}</button></div>`).join('')}
+   <div class="pb-ed"><input type="text" id="pb-n${gi}" placeholder="+ Ajouter un élément" onkeydown="if(event.key==='Enter')pbAjout(${gi})"><button class="ib" onclick="pbAjout(${gi})" aria-label="Ajouter">${ico('plus')}</button></div>
+  </div>`).join('') + `<p style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0"><button class="btn sm" onclick="pbAjoutGroupe()">${ico('plus')}Nouvelle rubrique</button><button class="btn sm" onclick="pbDefautRetablir()">Rétablir la liste d'origine</button></p>`;
+ } else {
+  corps = S.penseBete.map(g => `<div class="pb-g"><div class="pb-t">${esc(g.titre)}</div><div class="sugg">${g.items.map(it => estDans(it)
+   ? `<button class="pris" disabled>✓ ${esc(it)}</button>`
+   : `<button onclick="pbVersListe(this.dataset.n)" data-n="${esc(it)}" title="Ajouter à la liste">+ ${esc(it)}</button>`).join('')}</div></div>`).join('') || '<p class="k">Le pense-bête est vide. Touchez « Modifier » pour ajouter des éléments.</p>';
+ }
+ return `<details class="carte pb" ${S.pbOuvert ? 'open' : ''} ontoggle="S.pbOuvert=this.open;sauver()">
+  <summary><span>📝 Pense-bête <span class="k">— rien oublié ?</span></span><span class="badge ${pris === total && total ? 'ok' : ''}">${pris}/${total}</span></summary>
+  <p class="k" style="margin:4px 0 10px">${pbEdition ? 'Modifiez, ajoutez ou supprimez librement. Les changements sont enregistrés automatiquement.' : 'Passez la liste en revue : touchez un élément pour l\'ajouter à vos courses.'}</p>
+  ${corps}
+  <p style="margin:14px 0 0"><button class="btn sm ${pbEdition ? 'pri' : ''}" onclick="pbEdition=!pbEdition;rendu()">${pbEdition ? 'Terminer la modification' : ico('crayon') + 'Modifier le pense-bête'}</button></p>
+ </details>`;
+}
+function pbVersListe(n) { ajoutArticle(null, n); }
+function pbTitre(gi, v) { S.penseBete[gi].titre = v.trim() || 'Sans titre'; sauver(); }
+function pbItem(gi, ii, v) { v = v.trim(); if (v) S.penseBete[gi].items[ii] = v; else S.penseBete[gi].items.splice(ii, 1); sauver(); if (!v) rendu(); }
+function pbSupprItem(gi, ii) { S.penseBete[gi].items.splice(ii, 1); sauver(); rendu(); }
+function pbAjout(gi) { const el = $('pb-n' + gi), v = el.value.trim(); if (!v) return; S.penseBete[gi].items.push(v); sauver(); rendu(); const n = $('pb-n' + gi); if (n) n.focus(); }
+function pbAjoutGroupe() { S.penseBete.push({ id: uid(), titre: 'Nouvelle rubrique', items: [] }); sauver(); rendu(); }
+function pbSupprGroupe(gi) { const g = S.penseBete[gi]; if (g.items.length && !confirm(`Supprimer la rubrique « ${g.titre} » et ses ${g.items.length} élément(s) ?`)) return; const annuler = instantane(); S.penseBete.splice(gi, 1); sauver(); rendu(); toast('Rubrique supprimée', annuler); }
+function pbDefautRetablir() { if (!confirm('Remplacer votre pense-bête par la liste d\'origine ?')) return; const annuler = instantane(); S.penseBete = pbDefaut(); sauver(); rendu(); toast('Pense-bête rétabli', annuler); }
+let histMois = 3;
+const nomPayeur = p => p === 'joint' ? 'Compte commun' : (S.personnes[p] || '—');
+function vHistorique() {
+ if (!S.achats.length) return '';
+ const l = S.achats.slice().sort((a, b) => b.date.localeCompare(a.date) || (b.creeLe || '').localeCompare(a.creeLe || ''));
+ const parMois = []; for (const a of l) { const k = a.date.slice(0, 7); let g = parMois.find(x => x.k === k); if (!g) parMois.push(g = { k, l: [] }); g.l.push(a); }
+ const nomMois = k => { const [y, m] = k.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }); };
+ const ligne = a => { const e = etatAchat(a), n = (a.detail.length || a.articles.length);
+  return `<div class="ligne" style="cursor:pointer" onclick="dlgAchat('${a.id}')"><div class="tx"><div class="t">${fd(a.date)} · ${esc(a.magasin || 'Magasin non précisé')}</div><div class="m"><span class="meta">${esc(nomPayeur(a.payePar))} · ${n} article(s)</span>${a.montantCents ? `<span class="badge ${ENVOI_A[e][1]}">${ENVOI_A[e][0]}</span>` : '<span class="badge warn">Montant à saisir</span>'}</div></div><span class="prix">${a.montantCents ? euros(a.montantCents) : '—'}</span><span class="ib" aria-hidden="true">›</span></div>`; };
+ return `<div class="carte" style="margin-top:18px"><h2>🧾 Historique des courses</h2>
+ ${parMois.slice(0, histMois).map(g => `<div class="grp mois"><span>${nomMois(g.k)}</span><span class="badge">${g.l.length} course(s) · ${euros(g.l.reduce((s, a) => s + a.montantCents, 0))}</span></div>${g.l.map(ligne).join('')}`).join('')}
+ ${parMois.length > histMois ? `<p style="margin:12px 0 0"><button class="btn sm" onclick="histMois+=6;rendu()">Afficher les mois précédents</button></p>` : ''}</div>`;
+}
+/* Détail d'une session de courses */
+function dlgAchat(id) {
+ const a = S.achats.find(x => x.id === id); if (!a) { rendu(); return; }
+ const e = etatAchat(a), modifiable = true;
+ const arts = a.detail.length ? a.detail : a.articles.map(nom => ({ nom, qte: '', rayon: '' }));
+ $('dlg').innerHTML = `<div class="dlg"><h3>🧾 Courses du ${fd(a.date)}</h3>
+ <table><tr><td class="k">Magasin</td><td>${esc(a.magasin || '—')}</td></tr><tr><td class="k">Montant</td><td class="prix">${a.montantCents ? euros(a.montantCents) : '<span class="badge warn">À saisir</span>'}</td></tr>
+ <tr><td class="k">Payé par</td><td>${esc(nomPayeur(a.payePar))}</td></tr><tr><td class="k">Mon budget</td><td>${a.montantCents ? `<span class="badge ${ENVOI_A[e][1]}">${ENVOI_A[e][0]}</span>` : '<span class="k">envoyé une fois le montant saisi</span>'}</td></tr></table>
+ <div class="pb-t" style="margin-top:14px">Articles achetés (${arts.length})</div>
+ ${arts.length ? `<div class="sugg">${arts.map(x => `<span class="badge" style="font-size:13px;padding:4px 10px">${x.rayon && RAY[x.rayon] ? RAY[x.rayon].e + ' ' : ''}${x.qte ? '<b>' + esc(x.qte) + '</b> ' : ''}${esc(x.nom)}</span>`).join('')}</div>` : '<p class="k">Aucun article enregistré pour cette session.</p>'}
+ ${a.montantCents ? `<p class="k" style="margin-top:12px">Toute modification faite ici met à jour automatiquement la même ligne dans Mon budget (date, montant, magasin, payeur), sans doublon.</p>` : ''}
+ <div class="act"><button class="btn ko" onclick="supprAchat('${a.id}')">${ico('suppr')}Supprimer</button><span class="sp"></span>${modifiable ? `<button class="btn" onclick="editerAchat('${a.id}')">${ico('crayon')}Modifier</button>` : ''}<button class="btn pri" onclick="$('dlg').close()">Fermer</button></div></div>`;
+ if (!$('dlg').open) $('dlg').showModal();
+}
+function editerAchat(id) {
+ const a = S.achats.find(x => x.id === id); if (!a) return;
+ $('dlg').innerHTML = `<form class="dlg" onsubmit="return enregAchat(event,'${id}')"><h3>Modifier les courses</h3><div class="fg">
+  <label>Montant total payé (€)<input type="text" inputmode="decimal" id="ea-m" value="${a.montantCents ? (a.montantCents / 100).toString().replace('.', ',') : ''}" placeholder="Ex. : 87,45"></label>
+  <label>Date<input type="date" id="ea-d" value="${a.date}" required></label>
+  <label class="full">Magasin<input type="text" id="ea-s" list="dl-mag2" value="${esc(a.magasin)}"></label><datalist id="dl-mag2">${S.magasins.map(m => `<option value="${esc(m)}">`).join('')}</datalist>
+  <label class="full">Payé par<select id="ea-p">${optPayeur(a.payePar)}</select></label></div>
+ <p class="k" id="ea-err" style="color:var(--ko)"></p>
+ <div class="act"><button type="button" class="btn" onclick="dlgAchat('${id}')">Retour</button><button class="btn pri">Enregistrer</button></div></form>`;
+ setTimeout(() => $('ea-m').focus(), 30);
+}
+function enregAchat(ev, id) {
+ ev.preventDefault();
+ const a = S.achats.find(x => x.id === id); if (!a) { $('dlg').close(); rendu(); return false; }
+ const brut = $('ea-m').value.trim(), m = brut ? versCents(brut) : 0;
+ if (brut && (!m || m <= 0)) { $('ea-err').textContent = 'Montant invalide. Exemple : 87,45'; return false; }
+ if (!ISO.test($('ea-d').value)) { $('ea-err').textContent = 'Date invalide.'; return false; }
+ const annuler = instantane();
+ Object.assign(a, { montantCents: m || 0, date: $('ea-d').value, magasin: $('ea-s').value.trim(), payePar: $('ea-p').value });
+ sauver(); rendu(); dlgAchat(id); toast('Courses modifiées', annuler); return false;
+}
+function supprAchat(id) { const a = S.achats.find(x => x.id === id); if (!a) return; const etat = a.montantCents ? etatAchat(a) : '';
+ if (!confirm(`Supprimer les courses du ${fd(a.date)}${a.montantCents ? ' (' + euros(a.montantCents) + ')' : ''} de l'historique ?${etat === 'importe' || etat === 'rapproche' ? '\n\nElle restera dans Mon budget, qui sera simplement prévenu qu\'elle a été supprimée ici.' : ''}`)) return;
+ const annuler = instantane();
+ try { const M = MM(); if (M && a.montantCents > 0 && M.echange.entrees()[M.echange.ref('achat', id)]) M.echange.deposer('depense', id, { supprime: true, date: a.date, montantCents: a.montantCents }); } catch (e) {}
+ S.achats = S.achats.filter(a => a.id !== id); sauver(); if ($('dlg').open) $('dlg').close(); rendu(); toast('Courses supprimées de l\'historique', annuler); }
+
+/* =====================================================================
+   VERS « MON BUDGET » — tout part automatiquement par la boîte d'échange (voir plus haut : emettreAchats, etatAchat, etatProjet).
+   Plus aucun fichier à créer, importer ni confirmer.
+   ===================================================================== */
+async function telecharger(nom, objet) {
+ const f = new File([JSON.stringify(objet, null, 1)], nom, { type: 'application/json' });
+ try { if (navigator.canShare && navigator.canShare({ files: [f] }) && /iPhone|iPad|Android/i.test(navigator.userAgent)) { await navigator.share({ files: [f], title: nom }); return true; } } catch (e) { if (e && e.name === 'AbortError') return false; }
+ const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = nom; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); return true;
+}
+
+/* =====================================================================
+   RÉGLAGES ET SAUVEGARDE
+   ===================================================================== */
+function vReglages() {
+ return `<div class="ph"><div><h1>Réglages</h1><p>Foyer, catégories, rayons, sauvegarde et données.</p></div></div>
+ <div class="carte"><h2>👥 Le foyer</h2><div class="fg">
+  <label>Personne 1<input type="text" id="p0" value="${esc(S.personnes[0])}"></label>
+  <label>Personne 2<input type="text" id="p1" value="${esc(S.personnes[1])}"></label></div>
+  <p style="margin:12px 0 0"><button class="btn pri" onclick="enregPersonnes()">Enregistrer</button></p></div>
+ ${vReglCategories()}
+ ${vReglRayons()}
+ ${S.magasins.length ? `<div class="carte"><h2>🏪 Magasins mémorisés</h2><p class="k" style="margin-top:0">Proposés à la fin des courses. Retirez ceux qui ne servent plus.</p><div class="sugg">${S.magasins.map((m, i) => `<button onclick="magSuppr(${i})" aria-label="Retirer ${esc(m)}">${esc(m)} ✕</button>`).join('')}</div></div>` : ''}
+ <div class="carte"><h2>⚑ Priorité</h2><p class="k" style="margin:0">Un seul niveau : une tâche est « prioritaire » ou non, indépendamment de son échéance. Ce réglage se fait dans chaque tâche.</p></div>
+ <div class="carte"><h2>💾 Sauvegarde</h2>
+  <p class="k" style="margin-top:0">Vos données sont stockées dans ce navigateur uniquement. Faites une sauvegarde régulière, et utilisez-la pour passer du PC au téléphone. ${S.sauv ? 'Dernière sauvegarde : <b>' + fd(S.sauv) + '</b>.' : '<b>Aucune sauvegarde pour le moment.</b>'}</p>
+  <p style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" onclick="exporterTout()">${ico('dl')}Enregistrer une sauvegarde</button>
+  <label class="btn" style="color:var(--txt);font-size:14.5px">${ico('ul')}Restaurer une sauvegarde<input type="file" accept=".json,application/json" class="vh" onchange="importerTout(this.files[0]);this.value=''"></label></p>
+  <p class="k">Sur iPhone, une feuille de partage s'ouvre : choisissez « Enregistrer dans Fichiers ». La restauration vérifie le fichier et affiche un récapitulatif avant de remplacer quoi que ce soit.</p>
+  ${secoursDispo() ? `<p class="note" style="margin-top:10px">Une copie de données anciennes ou illisibles est conservée dans ce navigateur. <button class="btn sm" onclick="telechargerSecours()">${ico('dl')}Télécharger cette copie</button></p>` : ''}</div>
+ <div class="carte"><h2>🧹 Données</h2>
+  <p class="k" style="margin-top:0">${S.taches.length} tâche(s), ${S.courses.length} article(s) sur la liste, ${Object.keys(S.catalogue).length} article(s) mémorisé(s), ${S.achats.length} dépense(s) de courses.</p>
+  <p style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="oublierCatalogue()">Oublier les articles mémorisés</button><button class="btn ko" onclick="toutEffacer()">${ico('suppr')}Tout effacer</button></p></div>
+ <p class="k" style="text-align:center">Mon Quotidien · Notre Maison · version 10</p>`;
+}
+/* ---------- réglages : catégories de tâches ---------- */
+function vReglCategories() {
+ const n = c => S.taches.filter(t => t.cat === c).length;
+ return `<div class="carte"><h2>🏷️ Catégories de tâches</h2>
+  <p class="k" style="margin-top:0">Renommer met à jour les tâches concernées. Une catégorie supprimée n'est plus proposée, mais les tâches et l'historique la conservent.</p>
+  ${S.categories.map((c, i) => `<div class="pb-ed"><input type="text" value="${esc(c)}" aria-label="Catégorie ${esc(c)}" onchange="catRenommer(${i},this.value)"><span class="k nb">${n(c) ? n(c) + ' tâche(s)' : ''}</span><button class="ib" onclick="catSuppr(${i})" aria-label="Supprimer la catégorie ${esc(c)}">${ico('suppr')}</button></div>`).join('') || '<p class="k">Aucune catégorie.</p>'}
+  <div class="pb-ed"><input type="text" id="cat-n" placeholder="+ Nouvelle catégorie" onkeydown="if(event.key==='Enter')catAjout()"><button class="ib" onclick="catAjout()" aria-label="Ajouter la catégorie">${ico('plus')}</button></div></div>`;
+}
+const existeCat = (v, sauf) => S.categories.some((c, i) => i !== sauf && norm(c) === norm(v));
+function catAjout() {
+ const v = $('cat-n').value.trim(); if (!v) { $('cat-n').focus(); return; }
+ if (existeCat(v)) { toast(`La catégorie « ${v} » existe déjà.`); return; }
+ S.categories.push(v); sauver(); rendu(); toast(`Catégorie « ${v} » ajoutée`); const n = $('cat-n'); if (n) n.focus();
+}
+function catRenommer(i, v) {
+ v = v.trim(); const ancien = S.categories[i];
+ if (!v || v === ancien) { rendu(); return; }
+ if (existeCat(v, i)) { rendu(); toast(`La catégorie « ${v} » existe déjà.`); return; }
+ const annuler = instantane(); let n = 0;
+ S.categories[i] = v;
+ S.taches.forEach(t => { if (t.cat === ancien) { t.cat = v; n++; } }); S.journal.forEach(j => { if (j.cat === ancien) j.cat = v; });
+ sauver(); rendu(); toast(`Catégorie renommée${n ? ` (${n} tâche(s) mises à jour)` : ''}`, annuler);
+}
+function catSuppr(i) {
+ const c = S.categories[i], n = S.taches.filter(t => t.cat === c).length;
+ if (n && !confirm(`La catégorie « ${c} » est utilisée par ${n} tâche(s).\n\nElle ne sera plus proposée, mais ces tâches et l'historique la conserveront.\n\nSupprimer la catégorie ?`)) return;
+ const annuler = instantane(); S.categories.splice(i, 1); sauver(); rendu(); toast(`Catégorie « ${c} » supprimée`, annuler);
+}
+/* ---------- réglages : rayons des courses ---------- */
+function vReglRayons() {
+ const n = k => S.courses.filter(c => c.rayon === k).length;
+ return `<div class="carte"><h2>🛒 Rayons des courses</h2>
+  <p class="k" style="margin-top:0">L'ordre ci-dessous est celui de la liste de courses : rangez les rayons dans l'ordre de votre magasin. « Autre » ne peut pas être supprimé.</p>
+  ${S.rayons.map((r, i) => `<div class="pb-ed"><input type="text" value="${esc(r.e)}" aria-label="Symbole du rayon ${esc(r.n)}" onchange="rayModifier(${i},'e',this.value)" style="width:52px;flex:none;text-align:center"><input type="text" value="${esc(r.n)}" aria-label="Nom du rayon" onchange="rayModifier(${i},'n',this.value)"><span class="k nb">${n(r.k) ? n(r.k) + ' art.' : ''}</span>
+   <button class="ib" onclick="rayDeplacer(${i},-1)" ${i ? '' : 'disabled'} aria-label="Monter ${esc(r.n)}">↑</button><button class="ib" onclick="rayDeplacer(${i},1)" ${i < S.rayons.length - 1 ? '' : 'disabled'} aria-label="Descendre ${esc(r.n)}">↓</button>
+   ${r.k === 'autre' ? '<span class="ib" aria-hidden="true"></span>' : `<button class="ib" onclick="raySuppr(${i})" aria-label="Supprimer le rayon ${esc(r.n)}">${ico('suppr')}</button>`}</div>`).join('')}
+  <div class="pb-ed"><input type="text" id="ray-e" placeholder="🧺" style="width:52px;flex:none;text-align:center" aria-label="Symbole du nouveau rayon"><input type="text" id="ray-n" placeholder="+ Nouveau rayon" onkeydown="if(event.key==='Enter')rayAjout()"><button class="ib" onclick="rayAjout()" aria-label="Ajouter le rayon">${ico('plus')}</button></div></div>`;
+}
+const existeRay = (v, sauf) => S.rayons.some((r, i) => i !== sauf && norm(r.n) === norm(v));
+function rayAjout() {
+ const v = $('ray-n').value.trim(); if (!v) { $('ray-n').focus(); return; }
+ if (existeRay(v)) { toast(`Le rayon « ${v} » existe déjà.`); return; }
+ const i = S.rayons.findIndex(r => r.k === 'autre');
+ S.rayons.splice(i < 0 ? S.rayons.length : i, 0, { k: 'r-' + uid(), e: $('ray-e').value.trim().slice(0, 4) || '🛒', n: v }); // avant « Autre »
+ sauver(); rendu(); toast(`Rayon « ${v} » ajouté`);
+}
+function rayModifier(i, champ, v) {
+ v = v.trim(); const r = S.rayons[i]; if (!r) return;
+ if (champ === 'n') { if (!v) { rendu(); return; } if (existeRay(v, i)) { rendu(); toast(`Le rayon « ${v} » existe déjà.`); return; } }
+ const annuler = instantane(); r[champ] = champ === 'e' ? v.slice(0, 4) : v; sauver(); rendu(); toast('Rayon modifié', annuler);
+}
+function rayDeplacer(i, d) { const j = i + d; if (j < 0 || j >= S.rayons.length) return; [S.rayons[i], S.rayons[j]] = [S.rayons[j], S.rayons[i]]; sauver(); rendu(); }
+function raySuppr(i) {
+ const r = S.rayons[i]; if (!r || r.k === 'autre') return;
+ const nl = S.courses.filter(c => c.rayon === r.k).length, nc = Object.values(S.catalogue).filter(c => c.rayon === r.k).length;
+ if ((nl || nc) && !confirm(`Le rayon « ${r.n} » contient ${nl} article(s) de la liste${nc ? ` et ${nc} article(s) mémorisé(s)` : ''}.\n\nIls passeront dans « Autre ». L'historique des courses n'est pas modifié.\n\nSupprimer le rayon ?`)) return;
+ const annuler = instantane();
+ S.courses.forEach(c => { if (c.rayon === r.k) c.rayon = 'autre'; }); Object.values(S.catalogue).forEach(c => { if (c.rayon === r.k) c.rayon = 'autre'; });
+ S.rayons.splice(i, 1); sauver(); rendu(); toast(`Rayon « ${r.n} » supprimé`, annuler);
+}
+function magSuppr(i) { const m = S.magasins[i]; const annuler = instantane(); S.magasins.splice(i, 1); sauver(); rendu(); toast(`« ${m} » retiré des magasins`, annuler); }
+function enregPersonnes() { const a = $('p0').value.trim(), b = $('p1').value.trim(); if (!a || !b) { toast('Indiquez les deux prénoms.'); return; } S.personnes = [a, b]; sauver(); rendu(); toast('Prénoms enregistrés'); }
+async function exporterTout() {
+ // la sauvegarde contient toutes les données : tâches, courses, articles mémorisés, dépenses, magasins, pense-bête, prénoms
+ const ok = await telecharger('sauvegarde-quotidien-' + auj() + '.json', { format: 'quotidien-sauvegarde-v1', ...S, sauv: auj() });
+ if (ok) { S.sauv = auj(); sauver(); if (onglet === 'reglages' && !$('dlg').open) rendu(); toast('Sauvegarde créée'); } // la date n'est notée qu'après un export réussi
+}
+let IMPORT = null;
+function dlgMessage(titre, html) {
+ $('dlg').innerHTML = `<div class="dlg"><h3>${titre}</h3>${html}<div class="act"><button class="btn pri" onclick="$('dlg').close()">Compris</button></div></div>`;
+ if (!$('dlg').open) $('dlg').showModal();
+}
+function importerTout(f) {
+ if (!f) return;
+ const refus = (raison, liste) => dlgMessage('❌ Restauration impossible', `<p>${raison}</p>${liste ? `<ul>${liste.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}<p class="k"><b>Vos données actuelles n'ont pas été modifiées.</b></p>`);
+ if (f.size > 20e6) { refus(`« ${esc(f.name)} » est trop volumineux pour être une sauvegarde de Notre quotidien.`); return; }
+ f.text().then(txt => {
+  let d; try { d = JSON.parse(txt); } catch (e) { refus(`« ${esc(f.name)} » n'est pas un fichier JSON lisible (fichier vide, tronqué ou d'un autre type).`); return; }
+  const R = verifierDonnees(d);
+  if (R.E.length) { refus(`« ${esc(f.name)} » ne peut pas être utilisé :`, R.E); return; }
+  IMPORT = { nom: f.name, d: R.d, W: R.W }; dlgImport();
+ }).catch(() => refus("Le fichier n'a pas pu être lu."));
+}
+function dlgImport() {
+ const I = IMPORT, n = x => ({ t: x.taches.length, c: x.courses.length, a: x.achats.length, m: Object.keys(x.catalogue).length, p: x.penseBete.reduce((s, g) => s + g.items.length, 0) });
+ const a = n(S), b = n(I.d);
+ const L = [['Tâches', 't'], ['Articles sur la liste', 'c'], ['Dépenses de courses', 'a'], ['Articles mémorisés', 'm'], ['Éléments du pense-bête', 'p']];
+ $('dlg').innerHTML = `<div class="dlg"><h3>📥 Restaurer une sauvegarde</h3>
+ <p class="k" style="margin-top:-6px">Fichier : <b>${esc(I.nom)}</b>${I.d.sauv ? ` · sauvegarde du ${fd(I.d.sauv)}` : ''}</p>
+ <table><tr><th></th><th class="n">Actuellement</th><th class="n">Dans le fichier</th></tr>${L.map(([l, k]) => `<tr><td>${l}</td><td class="n">${a[k]}</td><td class="n"><b>${b[k]}</b></td></tr>`).join('')}</table>
+ ${I.W.length ? `<div class="note" style="margin-top:12px">${I.W.map(esc).join('<br>')}</div>` : ''}
+ <p class="note" style="margin-top:12px;border-color:var(--ko);background:var(--ko-soft)"><b>Attention :</b> toutes vos données actuelles seront <b>remplacées</b> par celles du fichier. Pensez à enregistrer d'abord une sauvegarde de vos données actuelles.</p>
+ <label class="toggle" style="margin-top:10px"><input type="checkbox" id="imp-ok" onchange="$('imp-go').disabled=!this.checked"> Je comprends que mes données actuelles seront remplacées</label>
+ <div class="act"><button class="btn" onclick="exporterTout()">${ico('dl')}Sauvegarder d'abord mes données</button><span class="sp"></span><button class="btn" onclick="IMPORT=null;$('dlg').close()">Annuler</button><button class="btn pri" id="imp-go" disabled onclick="appliquerImport()">Remplacer mes données</button></div></div>`;
+ if (!$('dlg').open) $('dlg').showModal();
+}
+function appliquerImport() {
+ if (!IMPORT) return;
+ const avant = JSON.stringify(S); copieSecours('avant-import');
+ const p = BLOQUE; BLOQUE = false; S = IMPORT.d;
+ if (!sauver()) { S = JSON.parse(avant); BLOQUE = p; dlgMessage('❌ Restauration impossible', "<p>Les nouvelles données n'ont pas pu être enregistrées dans le navigateur. <b>Vos données actuelles ont été conservées.</b></p>"); return; }
+ IMPORT = null; $('dlg').close(); rendu();
+ toast('Sauvegarde restaurée', () => { S = JSON.parse(avant); sauver(); rendu(); });
+}
+function secoursDispo() { try { return !!(localStorage.getItem(CLE + '.secours') || (BLOQUE && BRUT)); } catch (e) { return BLOQUE; } }
+function telechargerSecours() {
+ let brut = null; try { brut = localStorage.getItem(CLE + '.secours'); } catch (e) {}
+ brut = brut || BRUT; if (!brut) return;
+ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([brut], { type: 'application/json' })); a.download = 'copie-secours-quotidien-' + auj() + '.json'; document.body.appendChild(a); a.click(); a.remove();
+ if (BLOQUE) { BLOQUE = false; sauver(); rendu(); toast('Copie téléchargée : l\'enregistrement est de nouveau actif.'); }
+}
+function oublierCatalogue() { if (!confirm('Oublier tous les articles mémorisés (suggestions et rayons appris) ?')) return; const annuler = instantane(); S.catalogue = {}; sauver(); rendu(); toast('Articles oubliés', annuler); }
+function toutEffacer() {
+ const nb = 0;
+ $('dlg').innerHTML = `<div class="dlg"><h3>🗑️ Tout effacer</h3>
+ <p>Toutes les tâches, la liste de courses, les articles mémorisés, l'historique des dépenses et le pense-bête personnalisé seront effacés. Seuls les prénoms sont conservés.</p>
+ ${nb ? `<p class="note">${nb} élément(s) n'ont pas encore été confirmés comme importés dans Mon budget.</p>` : ''}
+ <p class="k">Pour confirmer, tapez <b>EFFACER</b> ci-dessous.</p>
+ <input type="text" id="ef-t" autocomplete="off" oninput="$('ef-go').disabled=this.value.trim().toUpperCase()!=='EFFACER'">
+ <div class="act"><button class="btn" onclick="exporterTout()">${ico('dl')}Sauvegarder d'abord</button><span class="sp"></span><button class="btn" onclick="$('dlg').close()">Annuler</button><button class="btn pri" id="ef-go" disabled style="background:var(--ko);border-color:var(--ko)" onclick="effacerConfirme()">Tout effacer</button></div></div>`;
+ $('dlg').showModal(); setTimeout(() => $('ef-t').focus(), 30);
+}
+function effacerConfirme() { if ($('ef-t').value.trim().toUpperCase() !== 'EFFACER') return; copieSecours('avant-effacement'); const annuler = instantane(); const p = S.personnes; S = vide(); S.personnes = p; sauver(); $('dlg').close(); rendu(); toast('Toutes les données ont été effacées', annuler); }
+
+/* ---------- exemple pour découvrir ---------- */
+function exemple() {
+ const j = auj(), t = (titre, qui, ech, o = {}) => ({ id: uid(), titre, notes: '', qui, echeance: ech, recur: 'aucune', cat: '', prio: false, fait: false, faitLe: '', creeLe: j, projet: null, ...o });
+ S.taches.push(
+  t('Sortir les poubelles', 'tous', j, { recur: 'semaine', cat: 'Maison' }),
+  t('Payer la cantine', 0, plusJours(j, -1), { cat: 'Administratif', prio: true }),
+  t('Prendre rendez-vous chez le dentiste', 1, plusJours(j, 3), { cat: 'Santé' }),
+  t('Faire la révision de la voiture', 0, plusJours(j, 12), { cat: 'Voiture', projet: { montantCents: 18000, date: plusJours(j, 12), paiements: 1, statut: 'planifiee', fichierLe: '', confirmeLe: '', demo: true } }),
+  t('Remplacer le lave-vaisselle', 'tous', '', { cat: 'Maison', projet: { montantCents: 45000, date: plusMois(j, 2), paiements: 3, statut: 'a_planifier', fichierLe: '', confirmeLe: '', demo: true } }),
+  t('Arroser les plantes', 1, plusJours(j, 1), { recur: 'deuxsem', cat: 'Maison' })
+ );
+ ['Lait', 'Baguette', '6 oeufs', 'Tomates', 'Pâtes', 'Liquide vaisselle', 'Yaourts', 'Pommes'].forEach(n => ajoutArticleSilencieux(n));
+ for (const [n, r] of [['Café', 'epicerie'], ['Beurre', 'frais'], ['Papier toilette', 'hygiene'], ['Bananes', 'fruits']]) S.catalogue[norm(n)] = { nom: n, rayon: r, n: 3, last: j };
+ PREMIERE = false; sauver(); rendu(); toast('Exemple chargé');
+}
+function ajoutArticleSilencieux(brut) { let qte = '', nom = brut, m; if ((m = brut.match(/^(\d+)\s+(.+)$/))) { qte = m[1]; nom = m[2]; } nom = nom.charAt(0).toUpperCase() + nom.slice(1); S.courses.push({ id: uid(), nom, qte, rayon: devinerRayon(nom), prixCents: null, coche: false }); }
+
+/* fermer la boîte de dialogue en cliquant à côté */
+$('dlg').addEventListener('click', e => { if (e.target === $('dlg')) $('dlg').close(); });
+/* synchroniser si l'outil est ouvert dans deux onglets */
+/* synchroniser si l'outil est ouvert dans deux onglets : seules des données valides sont reprises */
+window.addEventListener('storage', e => {
+ if (e.key !== CLE || !e.newValue) return;
+ let x; try { x = JSON.parse(e.newValue); } catch (err) { return; }
+ const R = verifierDonnees(x); if (R.E.length) return;
+ S = R.d;
+ if ($('dlg').open) { $('dlg').close(); toast('Données modifiées dans un autre onglet : la fenêtre a été fermée pour éviter un écrasement.'); }
+ rendu();
+});
+/* les compteurs dépendent de la date : on rafraîchit après minuit ou au retour sur l'onglet */
+let jourAffiche = auj();
+function verifierJour() { if (auj() === jourAffiche || $('dlg').open || (document.activeElement && document.activeElement.matches('input,textarea,select'))) return; jourAffiche = auj(); rendu(); }
+setInterval(verifierJour, 60000);
+/* envoi initial des courses, puis mise à jour de l'état quand Mon budget accuse réception */
+const rafraichirEchanges = () => { if ($('dlg').open || (document.activeElement && document.activeElement.matches('input,textarea,select'))) return; if (adopterRetours()) return; if (['accueil', 'taches', 'courses'].includes(onglet)) rendu(); };
+document.addEventListener('DOMContentLoaded', () => { emettreAchats(); rafraichirEchanges(); });
+addEventListener('storage', e => { if (e.key === 'maison.accuses.v1') rafraichirEchanges(); });
+addEventListener('focus', rafraichirEchanges);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) verifierJour(); });
+rendu();
+if (ALERTE) dlgMessage('⚠️ ' + ALERTE.titre, `<p>${esc(ALERTE.texte)}</p>${ALERTE.brut ? `<p><button class="btn pri" onclick="telechargerSecours()">${ico('dl')}Télécharger les données illisibles</button></p>` : ''}`);
+</script>
+</body>
+</html>

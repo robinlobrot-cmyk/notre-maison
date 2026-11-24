@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr" data-espace="accueil">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>Notre Maison</title>
+<link rel="icon" href="icone.png"><link rel="apple-touch-icon" href="icone.png">
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--surface2:#f1f3f9;--bord:#e4e7ef;--txt:#0f172a;--muted:#475569;--acc:#4f46e5;--acc2:#8b5cf6;--acc-soft:#eef0ff;--ok:#047857;--ok-soft:#e6f7ef;--warn:#b45309;--warn-soft:#fff3df;--ko:#be123c;--ko-soft:#ffecf0;--sh:0 1px 2px rgba(15,23,42,.05),0 6px 20px rgba(15,23,42,.05);--bgbase:linear-gradient(160deg,#f5f3ff 0%,#eef6ff 50%,#fdf2f8 100%);--ia:.55}
+@media(prefers-color-scheme:dark){:root{--bg:#0a0c12;--surface:#12151d;--surface2:#1a1e29;--bord:#252a38;--txt:#e9ecf4;--muted:#8d95aa;--acc:#818cf8;--acc2:#a78bfa;--acc-soft:#1b1f3d;--ok:#34d399;--ok-soft:#0e2a21;--warn:#fbbf24;--warn-soft:#2b2210;--ko:#fb7185;--ko-soft:#2e1219;--sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);--bgbase:linear-gradient(160deg,#0c0a18 0%,#070d1b 50%,#150a1d 100%);--ia:.4}}
+*{box-sizing:border-box}html{color-scheme:light dark}
+body{margin:0;font:14.5px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bgbase);background-attachment:fixed;color:var(--txt);min-height:100vh}
+main{max-width:820px;margin:0 auto;padding:32px 18px 60px}
+h1{margin:0;font-size:28px;letter-spacing:-.02em}.sous{margin:4px 0 24px;color:var(--muted)}
+.cartes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.esp{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--bord);border-radius:18px;padding:22px;box-shadow:var(--sh);transition:transform .15s,border-color .15s}
+.esp:hover{transform:translateY(-2px);border-color:var(--acc)}.esp:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.esp i{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;color:#fff;font-style:normal;font-size:22px;font-weight:700;margin-bottom:12px}
+.b i{background:linear-gradient(135deg,#4f46e5,#8b5cf6)}.q i{background:linear-gradient(135deg,#10b981,#06b6d4)}
+.esp h2{margin:0 0 4px;font-size:19px}.esp p{margin:0 0 10px;color:var(--muted)}.etat{font-size:13px;color:var(--muted);border-top:1px solid var(--bord);padding-top:10px}
+.go{display:inline-block;margin-top:12px;padding:8px 16px;border-radius:10px;background:var(--acc);color:#fff;font-weight:650}
+.note{margin-top:22px;background:var(--acc-soft);border-radius:12px;padding:12px 16px;font-size:13.5px}
+details{margin-top:16px;background:var(--surface);border:1px solid var(--bord);border-radius:14px;padding:12px 16px}summary{cursor:pointer;font-weight:650}
+
+.bloc{margin-top:22px;background:var(--surface);border:1px solid var(--bord);border-radius:18px;padding:20px;box-shadow:var(--sh)}
+.bloc h2{margin:0 0 4px;font-size:18px}.k{color:var(--muted);font-size:13.5px;margin:4px 0}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;border:1px solid var(--bord);background:var(--surface2);color:var(--txt);font:inherit;font-weight:650;cursor:pointer;min-height:40px}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn[disabled]{opacity:.5;cursor:default}.btn:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.msg{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--acc-soft);font-size:13.5px}.msg.ok{background:var(--ok-soft);color:var(--ok)}.msg.ko{background:var(--ko-soft);color:var(--ko)}.msg ul{margin:6px 0 0 18px;padding:0}
+.rc{margin-top:14px;border-top:1px solid var(--bord);padding-top:14px}.rc table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13.5px}.rc th,.rc td{padding:5px 8px;border-bottom:1px solid var(--bord);text-align:left}.rc .n{text-align:right}
+.rc label.ck{display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer}.rc h3{margin:12px 0 2px;font-size:15px}
+</style>
+<script src="maison.js" defer></script>
+</head>
+<body>
+<main>
+ <h1 style="display:flex;align-items:center;gap:14px"><img src="icone.png" alt="" width="56" height="56" style="border-radius:14px">Notre Maison</h1>
+ <p class="sous">Deux espaces, une seule maison : les finances d'un côté, le quotidien de l'autre.</p>
+ <div class="cartes">
+  <a class="esp b" href="budget.html#bord"><i>€</i><h2>Mon Budget</h2><p>Relevés, prévisions, alertes, simulateur d'achat, projets.</p><div class="etat" id="eb">Recherche des données…</div><span class="go">Ouvrir Mon Budget</span></a>
+  <a class="esp q" href="quotidien.html#accueil"><i>✓</i><h2>Mon Quotidien</h2><p>Tâches à deux, liste de courses, pense-bête.</p><div class="etat" id="eq">Recherche des données…</div><span class="go">Ouvrir Mon Quotidien</span></a>
+ </div>
+
+ <section class="bloc" id="cloud" aria-labelledby="cl-t" hidden>
+  <h2 id="cl-t">☁ Synchronisation en ligne</h2>
+  <p class="k">Retrouvez les mêmes données sur tous vos appareils (ordinateur, iPhone…). Vos données restent d'abord sur l'appareil, puis sont recopiées dans votre espace privé Supabase, accessible uniquement avec votre connexion.</p>
+  <div id="cl-corps"></div><div id="cl-msg" role="status"></div>
+ </section>
+
+ <section class="bloc" id="sauv" aria-labelledby="sv-t">
+  <h2 id="sv-t">Sauvegarde et reprise des données</h2>
+  <p class="k">Une seule sauvegarde pour toute la maison : budget et quotidien. Vous pouvez aussi y reprendre vos anciens fichiers de sauvegarde (un par espace, ou la sauvegarde globale). Rien n'est remplacé sans votre confirmation, et une copie de secours est gardée.</p>
+  <p class="k" id="sv-der"></p>
+  <div class="acts"><button class="btn pri" id="sv-go" onclick="svSauver()">Sauvegarder tout</button>
+   <label class="btn" style="cursor:pointer">Reprendre ou restaurer…<input type="file" accept=".json,application/json" multiple class="vh" onchange="svLire(this.files);this.value=''"></label>
+   <button class="btn" id="sv-un" onclick="svAnnuler()" hidden>Annuler la dernière reprise</button></div>
+  <div id="sv-msg" role="status"></div><div id="sv-rc"></div>
+ </section>
+ <div class="note">Vos données sont enregistrées dans ce navigateur. Sans synchronisation en ligne, les deux espaces doivent être ouverts avec le <b>même navigateur</b> pour retrouver les mêmes données ; avec la synchronisation (☁), elles suivent votre compte sur tous vos appareils.</div>
+ <details><summary>Créer un raccourci sur le bureau (Chrome)</summary>
+  <ol><li>Ouvrez l'espace voulu (Mon Budget ou Mon Quotidien).</li><li>Menu ⋮ → <b>Enregistrer et partager</b> → <b>Créer un raccourci…</b></li><li>Cochez « Ouvrir dans une fenêtre » si vous voulez qu'il s'ouvre comme une application, puis validez.</li></ol>
+  <p class="sous" style="margin:0">Faites-le une fois pour chaque espace : vous aurez deux raccourcis indépendants.</p></details>
+</main>
+<script>
+(function(){
+ function lire(k){try{var x=localStorage.getItem(k);return x?JSON.parse(x):null}catch(e){return null}}
+ function n(a,s,p){a=a||0;return a+' '+(a>1?p:s)}
+ var b=lire('budget.v3'),q=lire('quotidien.v1'),eb=document.getElementById('eb'),eq=document.getElementById('eq');
+ eb.textContent=b&&Array.isArray(b.txs)?(b.mode==='demo'?'Données de démonstration (vos données ne sont pas encore importées).':n(b.txs.length,'opération','opérations')+', '+n((b.projets||[]).length,'projet','projets')+'.'):'Aucune donnée trouvée dans ce navigateur pour le moment.';
+ eq.textContent=q&&Array.isArray(q.taches)?n(q.taches.length,'tâche','tâches')+', '+n((q.achats||[]).length,'session de courses','sessions de courses')+'.':'Aucune donnée trouvée dans ce navigateur pour le moment.';
+})();
+</script>
+<script>
+(function(){
+ var PLAN=null,$=function(i){return document.getElementById(i)};
+ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+ function quand(i){return i?new Date(i).toLocaleString('fr-FR',{dateStyle:'long',timeStyle:'short'}):'date inconnue'}
+ function msg(t,x,l){$('sv-msg').innerHTML=x?'<div class="msg '+t+'">'+x+(l&&l.length?'<ul>'+l.map(function(y){return'<li>'+esc(y)+'</li>'}).join('')+'</ul>':'')+'</div>':''}
+ function etat(){var d=Maison.derniereSauvegarde();$('sv-der').innerHTML='Dernière sauvegarde globale : <b>'+(d?quand(d):'aucune pour le moment')+'</b>';$('sv-un').hidden=!Maison.derniereReprise()}
+ window.svSauver=function(){msg('','');Maison.exporterTout().then(function(r){etat();msg(r.ok?'ok':'ko',r.ok?'Sauvegarde créée : « '+esc(r.nom)+' » ('+[r.budget?'Mon Budget':'',r.quotidien?'Mon Quotidien':''].filter(Boolean).join(' et ')+'). Conservez-la dans un dossier sûr.':esc(r.msg))})};
+ window.svLire=function(fs){if(!fs||!fs.length)return;msg('','');$('sv-rc').innerHTML='';Maison.analyser(fs).then(function(P){PLAN=P;var ks=Object.keys(P.items);
+  if(!ks.length){msg('ko','Aucune donnée n\'a pu être reprise. Vos données n\'ont pas été modifiées.',P.erreurs);return}
+  if(P.erreurs.length||P.ignores.length)msg('',' Certains fichiers ne sont pas repris :',P.erreurs.concat(P.ignores));
+  var h='<div class="rc"><h2 style="margin:0;font-size:16px">Récapitulatif avant reprise</h2>';
+  ks.forEach(function(e){var it=P.items[e],n=it.actuel||[];
+   h+='<h3><label class="ck" style="margin:0"><input type="checkbox" class="sv-e" value="'+e+'"'+(it.identique?'':' checked')+' onchange="svEtat()"> '+esc(Maison.NOMS[e])+'</label></h3><div class="k">Fichier « '+esc(it.nom)+' » · exporté le '+quand(it.date)+(it.identique?' · <b>identique à vos données actuelles</b>':'')+'</div>'
+   +'<table><tr><th></th><th class="n">Actuellement</th><th class="n">Dans le fichier</th></tr>'+it.fichier.map(function(r,i){return'<tr><td>'+esc(r[0])+'</td><td class="n">'+(n[i]?n[i][1]:0)+'</td><td class="n"><b>'+r[1]+'</b></td></tr>'}).join('')+'</table>'});
+  h+='<div class="msg">Les données actuelles des espaces cochés seront <b>remplacées</b> par celles des fichiers. Fermez avant les onglets de Mon Budget et de Mon Quotidien ouverts ailleurs. Vous pourrez annuler la reprise.</div>'
+   +'<label class="ck"><input type="checkbox" id="sv-cop" checked> Télécharger d\'abord une copie de mes données actuelles</label>'
+   +'<label class="ck"><input type="checkbox" id="sv-ok" onchange="svEtat()"> Je comprends que les données actuelles des espaces cochés seront remplacées</label>'
+   +'<div class="acts"><button class="btn pri" id="sv-ap" onclick="svAppliquer()" disabled>Appliquer la reprise</button><button class="btn" onclick="svFermer()">Annuler</button></div></div>';
+  $('sv-rc').innerHTML=h;svEtat()})};
+ window.svEtat=function(){var n=document.querySelectorAll('.sv-e:checked').length;if($('sv-ap'))$('sv-ap').disabled=!(n&&$('sv-ok').checked)};
+ window.svFermer=function(){PLAN=null;$('sv-rc').innerHTML=''};
+ window.svAppliquer=function(){if(!PLAN)return;var liste=[].map.call(document.querySelectorAll('.sv-e:checked'),function(x){return x.value});if(!liste.length)return;$('sv-ap').disabled=true;
+  var avant=$('sv-cop').checked?Maison.exporterTout():Promise.resolve({ok:true});
+  avant.then(function(c){
+   if(!c.ok&&$('sv-cop').checked&&c.msg&&c.msg.indexOf('aucune donnée')<0){msg('ko','Reprise annulée : la copie de vos données actuelles n\'a pas été créée. Rien n\'a été modifié.');$('sv-ap').disabled=false;return}
+   var r=Maison.appliquer(PLAN,liste);
+   if(!r.ok){msg('ko',esc(r.msg));$('sv-ap').disabled=false;return}
+   var d=liste.map(function(e){var it=PLAN.items[e];return Maison.NOMS[e]+' ('+it.fichier.map(function(x){return x[1]+' '+x[0].toLowerCase()}).join(', ')+')'});
+   svFermer();etat();msg('ok','Reprise terminée et vérifiée : '+d.map(esc).join(' ; ')+'. Une copie de vos données d\'avant est gardée dans ce navigateur.');majCartes()})};
+ window.svAnnuler=function(){if(!confirm('Revenir aux données d\'avant la dernière reprise ? Les modifications faites depuis seront perdues.'))return;var r=Maison.annuler();etat();msg(r.ok?'ok':'ko',r.ok?'Données d\'avant la reprise rétablies.':esc(r.msg));majCartes()};
+ function n(a,s,p){a=a||0;return a+' '+(a>1?p:s)}
+ function majCartes(){var b=Maison.lire('budget.v3'),q=Maison.lire('quotidien.v1');
+  $('eb').textContent=b&&Array.isArray(b.txs)?(b.mode==='demo'?'Données de démonstration (vos données ne sont pas encore importées).':n(b.txs.length,'opération','opérations')+', '+n((b.projets||[]).length,'projet','projets')+'.'):'Aucune donnée trouvée dans ce navigateur pour le moment.';
+  $('eq').textContent=q&&Array.isArray(q.taches)?n(q.taches.length,'tâche','tâches')+', '+n((q.achats||[]).length,'session de courses','sessions de courses')+'.':'Aucune donnée trouvée dans ce navigateur pour le moment.'}
+ document.addEventListener('DOMContentLoaded',function(){etat();majCartes()});
+})();
+</script>
+<script>
+(function(){
+ var $=function(i){return document.getElementById(i)};
+ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+ function msg(t,x){$('cl-msg').innerHTML=x?'<div class="msg '+t+'">'+esc(x)+'</div>':''}
+ var NOMS={'budget.v3':'Mon Budget','quotidien.v1':'Mon Quotidien'};
+ function dessiner(){var C=window.Maison&&Maison.cloud;if(!C)return;var e=C.etat();$('cloud').hidden=!e.actif;if(!e.actif)return;var h='';
+  var champ='display:block;width:100%;max-width:340px;margin:6px 0;padding:9px 12px;border-radius:10px;border:1px solid var(--bord);background:var(--surface2);color:var(--txt);font:inherit';
+  if(!e.email||e.statut==='deconnecte'){
+   h+='<label class="k">E-mail<input id="cl-em" type="email" autocomplete="username" style="'+champ+'"></label><label class="k">Mot de passe (8 caractères minimum)<input id="cl-pw" type="password" autocomplete="current-password" style="'+champ+'"></label>'
+    +'<div class="acts"><button class="btn pri" onclick="clConnexion()">Se connecter</button><button class="btn" onclick="clInscription()">Créer mon compte</button></div>'
+    +'<p class="k">Chaque personne du foyer crée son propre compte (même adresse e-mail que d\'habitude, mot de passe personnel).</p>';
+  }else if(!e.foyer){
+   h+='<p>Connecté : <b>'+esc(e.email)+'</b>. Dernière étape : le foyer.</p>'
+    +'<div class="acts"><button class="btn pri" onclick="clCreer()">Je suis la première personne : créer le foyer</button></div>'
+    +'<p class="k" style="margin-top:14px">Vous êtes la deuxième personne ? Saisissez le code reçu :</p><input id="cl-code" placeholder="Code du foyer" style="'+champ+';text-transform:uppercase"><div class="acts"><button class="btn" onclick="clRejoindre()">Rejoindre le foyer</button> <button class="btn" onclick="clDeco()">Se déconnecter</button></div>';
+  }else{
+   var s={ok:'<b style="color:var(--ok)">À jour</b>',sync:'Synchronisation…',hors:'<b style="color:var(--warn)">Hors ligne</b> (les modifications partiront au retour du réseau)',erreur:'<b style="color:var(--ko)">Erreur</b> : '+esc(e.msg),choix:'<b style="color:var(--warn)">Un choix est à faire</b>'}[e.statut]||'';
+   h+='<p>Connecté : <b>'+esc(e.email)+'</b><br>Statut : '+s+(e.der?'<br><span class="k">Dernière synchronisation : '+new Date(e.der).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+'</span>':'')+'</p>'
+    +(e.code?'<p class="k">Code du foyer (à donner à l\'autre personne pour qu\'elle rejoigne) : <b style="font-size:16px;letter-spacing:.08em">'+esc(e.code)+'</b></p>':'');
+   if(e.choix.length){var ks=e.choix.filter(function(k){return NOMS[k]}).map(function(k){return NOMS[k]}).join(' et ');
+    h+='<div class="msg"><b>Des données existent déjà sur cet appareil ET dans le cloud ('+esc(ks)+').</b> Choisissez celles à conserver :<div class="acts"><button class="btn pri" onclick="clChoix(\'cloud\')">Utiliser celles du cloud</button><button class="btn" onclick="clChoix(\'local\')">Garder celles de cet appareil (remplace le cloud)</button></div><p class="k">Les données remplacées sont gardées dans une copie de secours sur cet appareil.</p></div>';}
+   if(e.conflits.length)h+='<div class="msg">Une modification faite sur un autre appareil a été reprise ici. Votre version locale est conservée dans une copie de secours de ce navigateur.</div>';
+   h+='<div class="acts"><button class="btn" onclick="clSync()">Synchroniser maintenant</button><button class="btn" onclick="clDeco()">Se déconnecter</button></div>';}
+  var f=document.activeElement&&document.activeElement.id;var v1=$('cl-em')&&$('cl-em').value,v2=$('cl-pw')&&$('cl-pw').value;
+  if(f&&/^cl-/.test(f))return;$('cl-corps').innerHTML=h;if(v1&&$('cl-em'))$('cl-em').value=v1;if(v2&&$('cl-pw'))$('cl-pw').value=v2}
+ function occ(b,on){if(b)b.disabled=on}
+ window.clConnexion=function(){msg('','');Maison.cloud.connexion($('cl-em').value,$('cl-pw').value).then(function(r){msg(r.ok?'ok':'ko',r.ok?'Connecté.':r.msg);dessiner()})};
+ window.clInscription=function(){msg('','');Maison.cloud.inscription($('cl-em').value,$('cl-pw').value).then(function(r){msg(r.ok?'ok':'ko',r.msg||'');dessiner()})};
+ window.clCreer=function(){Maison.cloud.creerFoyer().then(function(r){msg(r.ok?'ok':'ko',r.ok?'Foyer créé. Donnez le code à l\'autre personne.':r.msg);dessiner()})};
+ window.clRejoindre=function(){Maison.cloud.rejoindre($('cl-code').value).then(function(r){msg(r.ok?'ok':'ko',r.ok?'Foyer rejoint.':r.msg);dessiner()})};
+ window.clDeco=function(){if(confirm('Se déconnecter de la synchronisation ? Les données restent sur cet appareil.')){Maison.cloud.deconnexion();dessiner()}};
+ window.clSync=function(){msg('','');Maison.cloud.synchroniser().then(dessiner)};
+ window.clChoix=function(m){if(m==='local'&&!confirm('Les données du cloud (Mon Budget / Mon Quotidien) seront remplacées par celles de cet appareil. Continuer ?'))return;if(m==='cloud'&&!confirm('Les données de cet appareil seront remplacées par celles du cloud. Continuer ?'))return;Maison.cloud.choisir(m).then(function(){dessiner();if(typeof majCartes==='function')majCartes();setTimeout(function(){location.reload()},400)})};
+ document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){if(window.Maison&&Maison.cloud){Maison.cloud.surChangement(dessiner);dessiner();if(location.hash==='#cloud'){var c=$('cloud');if(c&&!c.hidden)c.scrollIntoView()}}},300)});
+})();
+</script>
+</body>
+</html>
