@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr" data-espace="budget"><head><meta charset="utf-8">
+<html lang="fr" data-espace="budget"><head><meta charset="utf-8"><script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("maison.theme")||"creme-bleu")}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#62011d">
 <title>Mon budget</title>
 
@@ -276,23 +276,9 @@ body.fx-off .bg{display:none}body.fx-low .bg *,body.fx-low .bg::after{animation:
 
 .btn:not(.pri),button.g,button.a.g{border:1.5px solid var(--bord-c);font-weight:650}.btn.ko,button.ko{background:transparent;color:var(--ko);border:1.5px solid var(--ko)}.btn.ko:hover{background:var(--ko-soft)}
 
-/* THEME NOIR : fond bordeaux, structure noire */
-html:root{color-scheme:dark;--bg:#62011d;--bgbase:#62011d;--surface:#0c0c0d;--surface2:#18181b;--bord:#34343a;--bord-c:#8a8a93;--txt:#fff;--muted:#b8b8c0;--acc:#f6e6c8;--acc2:#e8737a;--acc-soft:#26262b;--acc-s:#f6e6c8;--btn:#f6e6c8;--btn-h:#fff;--ok:#34d399;--ok-soft:#0e2a21;--warn:#fbbf24;--warn-soft:#2b2210;--ko:#ff6b5e;--ko-soft:#3a1214;--inf:#7cc3d6;--inf-soft:#12303a;--grid:rgba(246,230,200,.05);--ia:0;--sh:0 8px 28px rgba(0,0,0,.35)}
-html,body{background:radial-gradient(1100px 700px at 85% -10%,#7d0c2c,transparent 60%),#62011d;background-attachment:fixed}
-.bg{display:none!important}
-aside{background:#050506!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-.carte:not(.h1){background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-.top{background:rgba(0,0,0,.4)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-body #maison-bar{background:rgba(0,0,0,.5)!important}
-.btn.pri,button.a,.sn.on,.chip.on,.racc.pri,.go,.it.on,.tb.on,.tile.on{background:var(--btn)!important;border-color:var(--btn)!important;color:#0c0c0d!important;box-shadow:none!important}
-.btn.pri:hover,button.a:hover{background:#fff!important}
-.it.on svg,.it.on span,.tb.on svg{color:#0c0c0d}
-.btn.pri svg,button.a svg{color:#0c0c0d}
-.pill,.av.p0{background:#e8737a!important;border-color:#e8737a!important;color:#1a0409!important}
-button.g,button.a.g,.btn:not(.pri):not(.ko){background:var(--surface);color:var(--txt);border:1.5px solid var(--bord-c)}
 </style><link rel="icon" href="icone.png"><link rel="apple-touch-icon" href="icone.png">
 <script src="maison.js" defer></script>
-</head><body>
+<link rel="stylesheet" href="themes.css"></head><body>
 <div class="bg"><i class="ir c1"></i><i class="ir c2"></i><i class="ir orb orb1"></i><i class="ir orb orb2"></i><i class="ir orb orb3"></i><i class="ir orb orb4"></i><i class="ir sheen"></i></div>
 <a class="skip" href="#vue">Aller au contenu</a><div id="live" class="vh" role="status" aria-live="polite"></div>
 <div class="app"><aside id="side"><div class="logo"><i>€</i>Mon budget</div><nav id="nav" aria-label="Menu principal"></nav></aside>
@@ -1207,6 +1193,7 @@ function catSuppr(i){const c=PA('cats')[i];if(!c)return;const n=catUsage(c.nom);
 function parametrage(){
  const sec=(id,t,d,corps)=>`<section class="carte pa" aria-labelledby="pt-${id}"><h2 class="pa-h" id="pt-${id}">${t}</h2><p class="k">${d}</p>${corps}</section>`,rows=g=>PSPEC.filter(x=>x.g===g).map(pRow).join('');
  return`<div class="note">Chaque réglage est enregistré dès que vous le modifiez, dans cet appareil, avec vos données (il est donc inclus dans vos sauvegardes). Il s'applique aussitôt au tableau de bord, aux prévisions, au simulateur et au calendrier.</div>`
+ +sec('apparence','Apparence','Fond et couleurs des boutons et des encadrés. Ce choix est propre à cet appareil : il n\'est ni sauvegardé ni partagé avec l\'autre personne du foyer.','<div data-theme-slot></div>')
  +sec('finances','Finances','Seuil de sécurité et point de départ des prévisions.',rows('finances')+pDepart())
  +sec('revenus','Revenus','Montant, fréquence et date de versement de vos revenus récurrents. Ce sont les mêmes lignes que dans « Charges et revenus prévus » : rien n\'est dupliqué.',pRevenus())
  +sec('depenses','Dépenses','Budget des dépenses variables, historique utilisé, seuils d\'alerte et catégories.',rows('depenses')+pCats())

@@ -1,0 +1,63 @@
+/* Notre Maison : thèmes d'apparence (choisis dans Réglages > Apparence, mémorisés par appareil).
+   Le thème par défaut « creme-bleu » correspond au CSS de chaque page : aucune règle ici. */
+
+/* ===== Ancien (bleu-violet) ===== */
+html[data-theme="ancien"]{--btn:#4f46e5;--btn-h:#4338ca;--bg:#f6f7fb;--surface:#fff;--surface2:#f1f3f9;--bord:#e4e7ef;--txt:#0f172a;--muted:#475569;--acc:#4f46e5;--acc2:#8b5cf6;--acc-soft:#eef0ff;--ko:#be123c;--ko-soft:#ffecf0;--acc-s:#4f46e5;--ko-s:#be123c;--bord-c:#7b869a;--inf:#4f46e5;--inf-soft:#eef0ff;--sh:0 1px 2px rgba(15,23,42,.05),0 6px 20px rgba(15,23,42,.05);--bgbase:linear-gradient(160deg,#f8f5ff 0%,#eef6ff 46%,#fff4f9 100%);--ia:.55;--grid:rgba(99,102,241,.08)}
+@media(prefers-color-scheme:dark){html[data-theme="ancien"]{--btn:#4f46e5;--btn-h:#6366f1;--bg:#0a0c12;--surface:#12151d;--surface2:#1a1e29;--bord:#252a38;--txt:#e9ecf4;--muted:#a9b1c6;--acc:#818cf8;--acc2:#a78bfa;--acc-soft:#1b1f3d;--ko:#fb7185;--ko-soft:#2e1219;--bord-c:#7f8aa3;--inf:#a5b4fc;--inf-soft:#1b1f3d;--sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);--bgbase:linear-gradient(160deg,#0c0a18 0%,#070d1b 50%,#150a1d 100%);--ia:.42;--grid:rgba(129,140,248,.09)}}
+html[data-theme="ancien"] .logo i{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+html[data-theme="ancien"] .carte.h1{background:linear-gradient(135deg,#4338ca,#6d28d9 60%,#a21caf);box-shadow:0 14px 40px rgba(99,102,241,.4)}
+html[data-theme="ancien"] .c1{background:conic-gradient(from 0deg,#ff8fd8,#8fc7ff,#9dffd6,#ffe69a,#c9a8ff,#ff8fd8)}
+html[data-theme="ancien"] .c2{background:conic-gradient(from 90deg,#7cf0ff,#ffb3e6,#b9a4ff,#aaffcf,#ffd7a1,#7cf0ff)}
+html[data-theme="ancien"] .orb1,html[data-theme="ancien"] .o1{background:radial-gradient(closest-side,rgba(255,122,198,.75),transparent)}
+html[data-theme="ancien"] .orb2,html[data-theme="ancien"] .o2{background:radial-gradient(closest-side,rgba(110,231,255,.75),transparent)}
+html[data-theme="ancien"] .orb3,html[data-theme="ancien"] .o3{background:radial-gradient(closest-side,rgba(167,139,250,.8),transparent)}
+html[data-theme="ancien"] .orb4{background:radial-gradient(closest-side,rgba(134,255,201,.7),transparent)}
+html[data-theme="ancien"] .it.on{background:linear-gradient(90deg,var(--acc-soft),transparent)}
+html[data-theme="ancien"] .pill,html[data-theme="ancien"] .av.p0{background:#4f46e5;border-color:#4f46e5;color:#fff}
+
+/* ===== Crème et bordeaux (version 16 : boutons bordeaux) ===== */
+html[data-theme="creme-bordeaux"]{--btn:#9b1b3c;--btn-h:#7a0f2e}
+@media(prefers-color-scheme:dark){html[data-theme="creme-bordeaux"]{--btn:#b02a46;--btn-h:#c43a56}}
+html[data-theme="creme-bordeaux"] .carte.h1{background:linear-gradient(135deg,#5e0a22,#8f1736 55%,#d65a63);box-shadow:0 14px 40px rgba(214,69,93,.4)}
+html[data-theme="creme-bordeaux"] .logo i{background:linear-gradient(135deg,#9b1b3c,#d65a63)}
+
+/* ===== Famille « fond bordeaux » (bx-…) ===== */
+html[data-theme^="bx-"]{color-scheme:dark;--bg:#62011d;--bgbase:#62011d;--ia:0;--grid:rgba(246,230,200,.05);--sh:0 8px 28px rgba(0,0,0,.35);--onbg:#ffffff;--onbg2:#f0d9de}
+html[data-theme^="bx-"],html[data-theme^="bx-"] body{background:radial-gradient(1100px 700px at 85% -10%,#7d0c2c,transparent 60%),#62011d;background-attachment:fixed}
+html[data-theme^="bx-"] .bg{display:none!important}
+html[data-theme^="bx-"] aside,html[data-theme^="bx-"] .top,html[data-theme^="bx-"] body #maison-bar{background:var(--side)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html[data-theme^="bx-"] .carte:not(.h1){background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html[data-theme^="bx-"] .btn.pri,html[data-theme^="bx-"] button.a,html[data-theme^="bx-"] .sn.on,html[data-theme^="bx-"] .chip.on,html[data-theme^="bx-"] .racc.pri,html[data-theme^="bx-"] .go,html[data-theme^="bx-"] .it.on,html[data-theme^="bx-"] .tb.on,html[data-theme^="bx-"] .tile.on{background:var(--btn)!important;border-color:var(--btn)!important;color:var(--btn-txt)!important;box-shadow:none!important}
+html[data-theme^="bx-"] .btn.pri:hover,html[data-theme^="bx-"] button.a:hover{filter:brightness(1.12)}
+html[data-theme^="bx-"] .it.on svg,html[data-theme^="bx-"] .it.on span,html[data-theme^="bx-"] .tb.on svg,html[data-theme^="bx-"] .btn.pri svg,html[data-theme^="bx-"] button.a svg{color:var(--btn-txt)}
+html[data-theme^="bx-"] .pill,html[data-theme^="bx-"] .av.p0{background:var(--pill)!important;border-color:var(--pill)!important;color:var(--pill-txt)!important}
+html[data-theme^="bx-"] button.g,html[data-theme^="bx-"] button.a.g,html[data-theme^="bx-"] .btn:not(.pri):not(.ko){background:var(--surface);color:var(--txt);border:1.5px solid var(--bord-c)}
+html[data-theme^="bx-"] .btn.ko{background:transparent;color:var(--ko);border:1.5px solid var(--ko)}
+html[data-theme^="bx-"] .ph h1,html[data-theme^="bx-"] .pa-h-out{color:var(--onbg)}
+html[data-theme^="bx-"] .ph p,html[data-theme^="bx-"] .ph .k,html[data-theme^="bx-"] .ph2>.k{color:var(--onbg2)}
+html[data-theme^="bx-"] body #maison-bar a.on{background:var(--btn);color:var(--btn-txt)}
+
+/* Noir */
+html[data-theme="bx-noir"]{--surface:#0c0c0d;--surface2:#18181b;--bord:#34343a;--bord-c:#8a8a93;--txt:#fff;--muted:#b8b8c0;--acc:#f6e6c8;--acc2:#e8737a;--acc-soft:#26262b;--acc-s:#f6e6c8;--btn:#f6e6c8;--btn-txt:#0c0c0d;--side:#050506;--pill:#e8737a;--pill-txt:#1a0409;--ok:#34d399;--ok-soft:#0e2a21;--warn:#fbbf24;--warn-soft:#2b2210;--ko:#ff6b5e;--ko-soft:#3a1214;--inf:#7cc3d6;--inf-soft:#12303a}
+/* Crème */
+html[data-theme="bx-creme"]{color-scheme:light;--surface:#fbf3e8;--surface2:#f1e4d0;--bord:#d9c5a8;--bord-c:#111;--txt:#1a0a0f;--muted:#5e4448;--acc:#62011d;--acc2:#b02a46;--acc-soft:#efd9d0;--acc-s:#62011d;--btn:#111;--btn-txt:#fbf3e8;--side:#f6e6c8;--pill:#62011d;--pill-txt:#fbf3e8;--ok:#0b7a52;--ok-soft:#dcefe5;--warn:#8f5405;--warn-soft:#f8e8c4;--ko:#b3261a;--ko-soft:#f8dcd7;--inf:#1f6b82;--inf-soft:#dcecf1}
+/* Sauge */
+html[data-theme="bx-sauge"],html[data-theme="bx-mixte"]{color-scheme:light;--surface:#a9b99b;--surface2:#bccaaf;--bord:#7f9373;--bord-c:#262b28;--txt:#141c16;--muted:#34422f;--acc:#262b28;--acc2:#4f6b4a;--acc-soft:#bccaaf;--acc-s:#262b28;--btn:#262b28;--btn-txt:#f1f3e6;--side:#96a98a;--pill:#262b28;--pill-txt:#f1f3e6;--ok:#0a5a3c;--ok-soft:#c3d6b6;--warn:#6f3f00;--warn-soft:#d8d3a4;--ko:#8f1a10;--ko-soft:#dcc2b6;--inf:#12556b;--inf-soft:#b4cdd0}
+/* Anthracite */
+html[data-theme="bx-anthracite"]{--surface:#3a3f42;--surface2:#474d50;--bord:#6a7175;--bord-c:#c8cdca;--txt:#f4f1ea;--muted:#c8cdca;--acc:#a9b99b;--acc2:#a9b99b;--acc-soft:#474d50;--acc-s:#a9b99b;--btn:#a9b99b;--btn-txt:#141c16;--side:#2b2f31;--pill:#a9b99b;--pill-txt:#141c16;--ok:#4be0ab;--ok-soft:#173a2e;--warn:#fbbf24;--warn-soft:#3b3320;--ko:#ff7a6c;--ko-soft:#46251f;--inf:#8bd0e2;--inf-soft:#1f3e46}
+/* Mixte : menu anthracite, cartes sauge */
+html[data-theme="bx-mixte"]{--side:#2b2f31}
+html[data-theme="bx-mixte"] aside,html[data-theme="bx-mixte"] body #maison-bar{--txt:#f2efe8;--muted:#c3c8c6;--bord:#4a5155;--bord-c:#c3c8c6;--btn:#a9b99b;--btn-txt:#141c16;--acc:#a9b99b;--acc-soft:#474d50;--surface2:#3a3f42;--pill:#a9b99b;--pill-txt:#141c16}
+html[data-theme="bx-mixte"] .top{--txt:#f2efe8}
+
+/* ===== Sélecteur d'apparence ===== */
+.mm-th{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
+.mm-th button{all:unset;box-sizing:border-box;cursor:pointer;display:block;border:2px solid var(--bord-c,#999);border-radius:14px;padding:10px;background:var(--surface,#fff);color:var(--txt,#000);font:inherit}
+.mm-th button:focus-visible{outline:3px solid var(--acc,#06c);outline-offset:2px}
+.mm-th button[aria-pressed="true"]{border-color:var(--acc,#06c);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc,#06c) 35%,transparent)}
+.mm-th .sw{display:flex;height:54px;border-radius:9px;overflow:hidden;border:1px solid rgba(0,0,0,.2);margin-bottom:8px}
+.mm-th .sw i{flex:1}.mm-th .sw i:nth-child(1){flex:1.2}
+.mm-th b{display:block;font-size:14px}.mm-th small{display:block;opacity:.8;font-size:12px;line-height:1.35;margin-top:2px}
+.mm-th .ck{float:right;font-weight:800}
+[data-theme-slot]{flex:1 1 100%;width:100%;min-width:0}
+html[data-theme^="bx-"] aside,html[data-theme^="bx-"] .top,html[data-theme^="bx-"] body #maison-bar{color:var(--txt)}

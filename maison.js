@@ -433,3 +433,51 @@ window.Maison = (function () {
  window.Maison.cloud = { etat: etatPublic, surChangement: function (f) { ecouteurs.push(f); }, connexion: connexion, inscription: inscription, deconnexion: deconnexion, creerFoyer: creerFoyer, rejoindre: rejoindre, synchroniser: synchroniser, choisir: choisir };
  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 50); }); else setTimeout(init, 50);
 })();
+
+/* ===== Apparence : choix du thème (propre à chaque appareil, clé « maison.theme », non synchronisée) ===== */
+(function () {
+ var LISTE = [
+  { id: 'creme-bleu', nom: 'Crème et bleu-pétrole', d: 'Clair ou sombre selon l\u2019appareil, boutons bleu-pétrole.', c: ['#fbf3e8', '#fffdf9', '#1f6b82'] },
+  { id: 'creme-bordeaux', nom: 'Crème et bordeaux (v16)', d: 'Clair ou sombre selon l\u2019appareil, boutons bordeaux.', c: ['#fbf3e8', '#fffdf9', '#9b1b3c'] },
+  { id: 'ancien', nom: 'Ancien (bleu-violet)', d: 'Le fond bleu d\u2019origine, clair ou sombre selon l\u2019appareil.', c: ['#eef6ff', '#ffffff', '#4f46e5'] },
+  { id: 'bx-noir', nom: 'Bordeaux et noir', d: 'Fond bordeaux, encadrés noirs, boutons crème.', c: ['#62011d', '#0c0c0d', '#f6e6c8'] },
+  { id: 'bx-creme', nom: 'Bordeaux et crème', d: 'Fond bordeaux, encadrés crème, boutons noirs.', c: ['#62011d', '#fbf3e8', '#111111'] },
+  { id: 'bx-sauge', nom: 'Bordeaux et vert sauge', d: 'Fond bordeaux, encadrés sauge, boutons anthracite.', c: ['#62011d', '#a9b99b', '#262b28'] },
+  { id: 'bx-anthracite', nom: 'Bordeaux et anthracite', d: 'Fond bordeaux, encadrés gris anthracite, boutons sauge.', c: ['#62011d', '#3a3f42', '#a9b99b'] },
+  { id: 'bx-mixte', nom: 'Bordeaux, mixte', d: 'Menu anthracite, encadrés vert sauge, boutons anthracite.', c: ['#62011d', '#a9b99b', '#2b2f31'] }
+ ];
+ var DEF = 'creme-bleu';
+ function get() { try { var t = localStorage.getItem('maison.theme'); for (var i = 0; i < LISTE.length; i++) if (LISTE[i].id === t) return t; } catch (e) {} return DEF; }
+ function appliquer(id) {
+  document.documentElement.setAttribute('data-theme', id);
+  var mt = document.querySelector('meta[name="theme-color"]');
+  if (mt) mt.setAttribute('content', id.indexOf('bx-') === 0 ? '#62011d' : '#62011d');
+ }
+ function set(id) { try { localStorage.setItem('maison.theme', id); } catch (e) {} appliquer(id); remplir(); }
+ function html() {
+  var cur = get();
+  return '<div class="mm-th" role="group" aria-label="Choix de l\u2019apparence">' + LISTE.map(function (t) {
+   var on = t.id === cur;
+   return '<button type="button" data-th="' + t.id + '" aria-pressed="' + on + '"><span class="sw"><i style="background:' + t.c[0] + '"></i><i style="background:' + t.c[1] + '"></i><i style="background:' + t.c[2] + '"></i></span><b>' + (on ? '<span class="ck">\u2713</span>' : '') + t.nom + '</b><small>' + t.d + '</small></button>';
+  }).join('') + '</div>';
+ }
+ function remplir() {
+  var z = document.querySelectorAll('[data-theme-slot]');
+  for (var i = 0; i < z.length; i++) { z[i].innerHTML = html(); z[i].setAttribute('data-filled', '1'); }
+ }
+ document.addEventListener('click', function (e) {
+  var b = e.target.closest && e.target.closest('[data-th]'); if (b) { e.preventDefault(); set(b.getAttribute('data-th')); }
+ });
+ window.addEventListener('storage', function (e) { if (e.key === 'maison.theme') { appliquer(get()); remplir(); } });
+ function surveiller() {
+  remplir();
+  if (window.MutationObserver) new MutationObserver(function () {
+   var z = document.querySelectorAll('[data-theme-slot]:not([data-filled])');
+   for (var i = 0; i < z.length; i++) { z[i].innerHTML = html(); z[i].setAttribute('data-filled', '1'); }
+  }).observe(document.body, { childList: true, subtree: true });
+ }
+ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', surveiller); else surveiller();
+ appliquer(get());
+ window.Maison = window.Maison || {};
+ window.Maison.theme = { liste: LISTE, get: get, set: set };
+})();
