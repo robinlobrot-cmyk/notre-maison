@@ -31,7 +31,22 @@ details{margin-top:16px;background:var(--surface);border:1px solid var(--bord);b
 .msg{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--acc-soft);font-size:13.5px}.msg.ok{background:var(--ok-soft);color:var(--ok)}.msg.ko{background:var(--ko-soft);color:var(--ko)}.msg ul{margin:6px 0 0 18px;padding:0}
 .rc{margin-top:14px;border-top:1px solid var(--bord);padding-top:14px}.rc table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13.5px}.rc th,.rc td{padding:5px 8px;border-bottom:1px solid var(--bord);text-align:left}.rc .n{text-align:right}
 .rc label.ck{display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer}.rc h3{margin:12px 0 2px;font-size:15px}
-.btn:not(.pri){border:1.5px solid var(--bord-c);font-weight:650}</style>
+.btn:not(.pri){border:1.5px solid var(--bord-c);font-weight:650}
+/* THEME NOIR : fond bordeaux, structure noire */
+html:root{color-scheme:dark;--bg:#62011d;--bgbase:#62011d;--surface:#0c0c0d;--surface2:#18181b;--bord:#34343a;--bord-c:#8a8a93;--txt:#fff;--muted:#b8b8c0;--acc:#f6e6c8;--acc2:#e8737a;--acc-soft:#26262b;--acc-s:#f6e6c8;--btn:#f6e6c8;--btn-h:#fff;--ok:#34d399;--ok-soft:#0e2a21;--warn:#fbbf24;--warn-soft:#2b2210;--ko:#ff6b5e;--ko-soft:#3a1214;--inf:#7cc3d6;--inf-soft:#12303a;--grid:rgba(246,230,200,.05);--ia:0;--sh:0 8px 28px rgba(0,0,0,.35)}
+html,body{background:radial-gradient(1100px 700px at 85% -10%,#7d0c2c,transparent 60%),#62011d;background-attachment:fixed}
+.bg{display:none!important}
+aside{background:#050506!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.carte:not(.h1){background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.top{background:rgba(0,0,0,.4)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body #maison-bar{background:rgba(0,0,0,.5)!important}
+.btn.pri,button.a,.sn.on,.chip.on,.racc.pri,.go,.it.on,.tb.on,.tile.on{background:var(--btn)!important;border-color:var(--btn)!important;color:#0c0c0d!important;box-shadow:none!important}
+.btn.pri:hover,button.a:hover{background:#fff!important}
+.it.on svg,.it.on span,.tb.on svg{color:#0c0c0d}
+.btn.pri svg,button.a svg{color:#0c0c0d}
+.pill,.av.p0{background:#e8737a!important;border-color:#e8737a!important;color:#1a0409!important}
+button.g,button.a.g,.btn:not(.pri):not(.ko){background:var(--surface);color:var(--txt);border:1.5px solid var(--bord-c)}
+</style>
 <script src="maison.js" defer></script>
 </head>
 <body>
