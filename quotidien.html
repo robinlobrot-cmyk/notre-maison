@@ -126,6 +126,7 @@ details.dpanier>summary::-webkit-details-marker{display:none}details.dpanier>sum
 .carte h2 .sp{flex:1}.carte h2{flex-wrap:wrap}main{min-width:0}.carte h2 .lien{font-size:13px}
 .panier{position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#5e0a22,#8f1736);color:#fff;box-shadow:0 10px 30px rgba(155,27,60,.4);margin-top:14px}
 .panier .sp{flex:1}.panier .btn{background:#fff;color:#5e0a22;border:0}
+@media(max-width:900px){.panier{flex-wrap:wrap}.panier>div:first-child{flex:1 1 100%}.panier .sp{display:none}.panier .btn{flex:1}}
 table{width:100%;border-collapse:collapse}td,th{padding:9px 8px;border-bottom:1px solid var(--bord);text-align:left;vertical-align:middle}th{font-size:12px;color:var(--muted);font-weight:650}td.n,th.n{text-align:right}
 .etapes{margin:0;padding-left:20px}.etapes li{margin:4px 0}
 .note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:8px;font-size:13.5px}
@@ -234,18 +235,17 @@ const ico = (n, cl = '') => `<svg class="${cl}" viewBox="0 0 24 24" fill="none" 
 
 /* ---------- rayons et rangement automatique des articles ---------- */
 const RAYONS = [
+ ['frais', '🧀', 'Frais', 'lait beurre creme yaourt yogourt fromage emmental comte camembert mozzarella feta parmesan oeuf oeufs skyr fromage blanc petit suisse jambon lardon lardons knacki saucisse pate feuilletee pate brisee pate a pizza houmous dessert poulet dinde boeuf steak hache veau porc cote agneau escalope filet saumon cabillaud colin crevette poisson viande merguez roti cuisse magret pain baguette brioche croissant pain de mie viennoiserie tortilla wrap traiteur'],
  ['fruits', '🥦', 'Fruits et légumes', 'pomme poire banane orange citron clementine mandarine kiwi fraise framboise raisin melon pasteque ananas mangue avocat tomate salade laitue concombre courgette aubergine poivron carotte pomme de terre patate oignon ail echalote poireau brocoli chou epinard champignon haricot vert radis betterave persil coriandre basilic menthe fruit legume courge potiron navet celeri fenouil endive'],
- ['frais', '🧀', 'Crèmerie et frais', 'lait beurre creme yaourt yogourt fromage emmental comte camembert mozzarella feta parmesan oeuf oeufs skyr fromage blanc petit suisse jambon lardon lardons knacki saucisse pate feuilletee pate brisee pate a pizza houmous dessert compote'],
- ['viande', '🥩', 'Viande et poisson', 'poulet dinde boeuf steak hache veau porc cote agneau escalope filet saumon thon cabillaud colin crevette poisson viande merguez roti cuisse magret'],
- ['pain', '🥖', 'Boulangerie', 'pain baguette brioche croissant pain de mie biscotte viennoiserie tortilla wrap'],
- ['epicerie', '🥫', 'Épicerie', 'pates riz semoule quinoa lentille farine sucre sel poivre huile vinaigre moutarde mayonnaise ketchup sauce conserve tomate pelee concentre cafe the chocolat cacao cereales confiture miel nutella biscuit gateau chips olive epice bouillon levure amande noix noisette sirop compote puree soupe thon en boite mais'],
+ ['sec', '🥫', 'Sec (épicerie et boissons)', 'pates riz semoule quinoa lentille farine sucre sel poivre huile vinaigre moutarde mayonnaise ketchup sauce conserve tomate pelee concentre cafe the chocolat cacao cereales confiture miel nutella biscuit biscotte gateau chips olive epice bouillon levure amande noix noisette sirop compote puree soupe thon en boite mais eau eau gazeuse jus soda coca biere vin champagne limonade lait vegetal boisson'],
  ['surgeles', '❄️', 'Surgelés', 'surgele surgeles glace pizza surgelee frites legumes surgeles poisson pane nuggets'],
- ['boissons', '🧃', 'Boissons', 'eau eau gazeuse jus soda coca biere vin champagne limonade lait vegetal boisson'],
- ['bebe', '👶', 'Bébé', 'couche couches lingette lingettes petit pot petits pots lait de croissance lait infantile liniment biberon tetine serum physiologique'],
- ['hygiene', '🧴', 'Hygiène et beauté', 'shampoing gel douche savon dentifrice brosse a dents deodorant coton mouchoir papier toilette rasoir creme solaire maquillage serviette hygienique tampon protection'],
+ ['hygiene', '🧴', 'Hygiène, beauté et bébé', 'shampoing gel douche savon dentifrice brosse a dents deodorant coton mouchoir papier toilette rasoir creme solaire maquillage serviette hygienique tampon protection couche couches lingette lingettes petit pot petits pots lait de croissance lait infantile liniment biberon tetine serum physiologique'],
  ['maison', '🧽', 'Entretien et maison', 'lessive adoucissant liquide vaisselle eponge sac poubelle essuie tout papier alu film alimentaire javel nettoyant pastille lave vaisselle ampoule pile allumette bougie'],
+ ['animaux', '🐾', 'Animaux', 'croquettes croquette litiere patee friandise friandises chien chat animal os a macher pate pour chat pate pour chien'],
  ['autre', '🛒', 'Autre', '']
 ];
+const ANCIENS_RAYONS = ['fruits', 'frais', 'viande', 'pain', 'epicerie', 'surgeles', 'boissons', 'bebe', 'hygiene', 'maison', 'autre'];
+const MIGR_RAYON = { viande: 'frais', pain: 'frais', epicerie: 'sec', boissons: 'sec', bebe: 'hygiene' };
 const rayonsDefaut = () => RAYONS.map(([k, e, n]) => ({ k, e, n }));
 /* RAY[clé] -> { e: emoji, n: nom } lu en direct dans les réglages (S.rayons) */
 const RAY = new Proxy({}, {
@@ -278,7 +278,7 @@ const PB_DEFAUT = [
  ['🏠 Maison', ['Lessive', 'Liquide vaisselle', 'Pastilles lave-vaisselle', 'Éponges', 'Sacs poubelle', 'Essuie-tout', 'Produit ménager', 'Piles / ampoules']]
 ];
 const pbDefaut = () => PB_DEFAUT.map(([titre, items]) => ({ id: uid(), titre, items: items.slice() }));
-const vide = () => ({ v: 1, personnes: ['Robin', 'Maelys'], taches: [], courses: [], catalogue: {}, achats: [], magasins: [], sauv: '', penseBete: pbDefaut(), pbOuvert: true, journal: [], categories: CATS_T.slice(), rayons: rayonsDefaut() });
+const vide = () => ({ v: 1, personnes: ['Robin', 'Maelys'], taches: [], courses: [], catalogue: {}, achats: [], magasins: [], sauv: '', penseBete: pbDefaut(), pbOuvert: true, journal: [], categories: CATS_T.slice(), rayons: rayonsDefaut(), rayonsV: 2 });
 const ISO = { test: x => typeof x === 'string' && /^\d{4}-\d\d-\d\d$/.test(x) && iso(versDate(x)) === x }; // date AAAA-MM-JJ réellement existante
 /* État d'envoi vers Mon budget : à envoyer -> import à confirmer -> importé */
 const etatEnvoi = x => x.confirmeLe ? 'importe' : x.fichierLe ? 'a_confirmer' : 'a_envoyer';
@@ -352,10 +352,23 @@ function verifierDonnees(src) {
   else { t.projet.montantCents = Math.round(t.projet.montantCents); t.projet.paiements = Math.max(1, parseInt(t.projet.paiements) || 1); migrerEnvoi(t.projet); }
  }
  // rayons (réglages) : « Autre » est toujours présent
+ // passage unique aux rayons « de supermarché » (v21) : seulement si les rayons sont encore ceux d'origine
+ let migrRay = false;
+ if (d.rayonsV !== 2) {
+  const ks = Array.isArray(d.rayons) ? d.rayons.map(r => obj(r) ? r.k : null) : null;
+  if (!ks || (ks.length === ANCIENS_RAYONS.length && ANCIENS_RAYONS.every(k => ks.includes(k)))) { d.rayons = rayonsDefaut(); migrRay = true; }
+  d.rayonsV = 2;
+ }
  if (d.rayons === undefined) d.rayons = rayonsDefaut();
  else { const vus = new Set(); d.rayons = d.rayons.filter(r => obj(r) && str(r.k) && r.k && str(r.n) && r.n.trim() && !vus.has(r.k) && vus.add(r.k)).map(r => ({ k: r.k, e: str(r.e) ? r.e.slice(0, 4) : '', n: r.n.trim() })); }
  if (!d.rayons.some(r => r.k === 'autre')) d.rayons.push({ k: 'autre', e: '🛒', n: 'Autre' });
  const RK = new Set(d.rayons.map(r => r.k));
+ if (migrRay) {
+  const m = k => MIGR_RAYON[k] || k;
+  if (Array.isArray(d.courses)) for (const c of d.courses) if (obj(c)) c.rayon = m(c.rayon);
+  if (obj(d.catalogue)) for (const v of Object.values(d.catalogue)) if (obj(v)) v.rayon = m(v.rayon);
+  if (Array.isArray(d.achats)) for (const a of d.achats) if (obj(a) && Array.isArray(a.detail)) for (const x of a.detail) if (obj(x)) x.rayon = m(x.rayon);
+ }
  // catégories de tâches (réglages)
  if (d.categories === undefined) d.categories = CATS_T.slice();
  else { const vus = new Set(); d.categories = d.categories.filter(c => str(c) && c.trim() && !vus.has(norm(c)) && vus.add(norm(c))).map(c => c.trim()); }
@@ -865,12 +878,39 @@ function ajoutArticle(inputId, nomDirect) {
  }
  const cat = S.catalogue[norm(nom)];
  const rayon = devinerRayon(nom);
- S.courses.push({ id: uid(), nom: cat ? cat.nom : nom, qte, rayon, prixCents: null, coche: false });
+ const nouvelId = uid();
+ S.courses.push({ id: nouvelId, nom: cat ? cat.nom : nom, qte, rayon, prixCents: null, coche: false });
  if (el) el.value = '';
  PREMIERE = false; sauver(); rendu();
+ if (rayon === 'autre' && !cat) { setTimeout(() => dlgRayon(nouvelId), 120); return; } // léger délai : la touche Entrée ne doit pas activer un bouton de la fenêtre // inconnu : on demande le rayon (et on le retient)
  const n = inputId && $(inputId); if (n) n.focus();
  toast(`« ${nom} » ajouté · ${(RAY[rayon] || { n: 'Autre' }).n}`);
 }
+/* Question posée quand un nouvel article ne tombe dans aucun rayon connu */
+function dlgRayon(id) {
+ const c = S.courses.find(x => x.id === id); if (!c) return;
+ $('dlg').innerHTML = `<div class="dlg"><h3>Dans quel rayon ?</h3>
+ <p class="k" style="margin-top:0">« ${esc(c.nom)} » est nouveau pour moi. Choisissez son rayon : je m'en souviendrai la prochaine fois.</p>
+ <div class="sugg" style="margin:10px 0">${S.rayons.filter(r => r.k !== 'autre').map(r => `<button type="button" onclick="choisirRayon('${id}','${esc(r.k)}')">${esc(r.e)} ${esc(r.n)}</button>`).join('')}</div>
+ <div class="act"><button type="button" class="btn" onclick="choisirRayon('${id}','autre')">Laisser dans « Autre »</button></div></div>`;
+ $('dlg').showModal();
+}
+function choisirRayon(id, k) {
+ const c = S.courses.find(x => x.id === id);
+ if (c) { c.rayon = k; const n = norm(c.nom); S.catalogue[n] = Object.assign(S.catalogue[n] || { nom: c.nom, n: 0, last: '' }, { rayon: k }); sauver(); }
+ $('dlg').close(); rendu(); if (c) { flash(c.id); toast(`« ${c.nom} » ajouté · ${(RAY[k] || { n: 'Autre' }).n}`); }
+ const e = $('co-a'); if (e) e.focus();
+}
+/* Consulter le panier en cours sans quitter la liste */
+function voirPanier() {
+ const panier = S.courses.filter(c => c.coche);
+ if (!panier.length) { toast('Le panier est vide.'); return; }
+ const tot = panier.reduce((a, c) => a + (c.prixCents || 0), 0);
+ const grp = S.rayons.filter(r => panier.some(c => c.rayon === r.k)).map(r => `<div class="grp rayon"><span class="e">${esc(r.e)}</span>${esc(r.n)}</div>${panier.filter(c => c.rayon === r.k).map(c => `<div class="ligne art"><div class="tx"><div class="t">${esc(c.nom)}${c.qte ? ' <span class="k">× ' + esc(c.qte) + '</span>' : ''}</div></div>${c.prixCents ? `<span class="prix">${euros(c.prixCents)}</span>` : ''}<button class="btn sm" onclick="depaniser('${c.id}')">Retirer</button></div>`).join('')}`).join('');
+ $('dlg').innerHTML = `<div class="dlg"><h3>🧺 Mon panier (${panier.length})</h3>${grp}${tot ? `<p class="k">Prix notés : <b>${euros(tot)}</b></p>` : ''}<div class="act"><span class="sp"></span><button type="button" class="btn pri" onclick="$('dlg').close()">Fermer</button></div></div>`;
+ $('dlg').showModal();
+}
+function depaniser(id) { const c = S.courses.find(x => x.id === id); if (c) { c.coche = false; sauver(); } rendu(); if (S.courses.some(x => x.coche)) voirPanier(); else $('dlg').close(); }
 let panierOuvert = false;
 function ligneArt(c) {
  return `<div class="ligne art ${c.coche ? 'fait' : ''}" id="c-${c.id}">
@@ -899,7 +939,7 @@ function vCourses() {
  ${progres}
  ${listes || (panier.length ? '' : '<div class="carte vide"><b>🛒</b>La liste est vide. Ajoutez des articles ci-dessus.</div>')}
  ${panier.length ? `<details class="dpanier" ${panierOuvert ? 'open' : ''} ontoggle="panierOuvert=this.open"><summary>🧺 Dans le panier <span class="badge ok">${panier.length}</span> <span class="k" style="text-transform:none;letter-spacing:0;font-weight:500">— touchez pour décocher</span></summary>${panier.map(ligneArt).join('')}</details>
- <div class="panier"><div><b>${panier.length} article${panier.length > 1 ? 's' : ''} dans le panier</b>${totalPanier ? `<div style="font-size:12.5px;opacity:.85">Prix notés : ${euros(totalPanier)}</div>` : afaire.length ? `<div style="font-size:12.5px;opacity:.85">${afaire.length} restant(s)</div>` : ''}</div><span class="sp"></span><button class="btn" onclick="terminerCourses()">Mes courses sont finies</button></div>` : ''}
+ <div class="panier"><div><b>${panier.length} article${panier.length > 1 ? 's' : ''} dans le panier</b>${totalPanier ? `<div style="font-size:12.5px;opacity:.85">Prix notés : ${euros(totalPanier)}</div>` : afaire.length ? `<div style="font-size:12.5px;opacity:.85">${afaire.length} restant(s)</div>` : ''}</div><span class="sp"></span><button class="btn" onclick="voirPanier()">Voir le panier</button><button class="btn" onclick="terminerCourses()">Mes courses sont finies</button></div>` : ''}
  </div><div class="col-d">${vPenseBete()}</div></div>
  ${vHistorique()}`;
 }
@@ -1119,7 +1159,7 @@ function vReglages() {
  <div class="carte"><h2>🧹 Données</h2>
   <p class="k" style="margin-top:0">${S.taches.length} tâche(s), ${S.courses.length} article(s) sur la liste, ${Object.keys(S.catalogue).length} article(s) mémorisé(s), ${S.achats.length} dépense(s) de courses.</p>
   <p style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="oublierCatalogue()">Oublier les articles mémorisés</button><button class="btn ko" onclick="toutEffacer()">${ico('suppr')}Tout effacer</button></p></div>
- <p class="k" style="text-align:center">Mon Quotidien · Notre Maison · version 20</p>`;
+ <p class="k" style="text-align:center">Mon Quotidien · Notre Maison · version 21</p>`;
 }
 /* ---------- réglages : catégories de tâches ---------- */
 function vReglCategories() {
